@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智慧採購文件自動生成系統 (Smart Procurement Generator) - Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- Load Chart.js for data visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- Header Section -->
+  <header>
+    <div class="logo-container">
+      <div class="logo-icon">S</div>
+      <div class="logo-text">
+        <h1>智慧採購文件自動生成系統</h1>
+        <p>AI-POWERED PROCUREMENT FILE ENGINE</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <span class="server-status-badge">
+        <span class="status-dot"></span>
+        <span id="serverStatusText">本地伺服器：已連線</span>
+      </span>
+      <span class="badge-2026">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        2026 年政府採購法公告金額 150 萬新制
+      </span>
+    </div>
+  </header>
+
+  <!-- Navigation View Switcher -->
+  <div class="view-switcher-container">
+    <div class="view-tabs-main">
+      <button class="view-tab-btn active" id="btnViewDashboard" onclick="switchView('dashboard')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+        標案工作主控台 (Dashboard)
+      </button>
+      <button class="view-tab-btn" id="btnViewWizard" onclick="startNewProcurement()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        新建採購標案 (Wizard)
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <main class="main-container">
+
+    <!-- VIEW 1: DASHBOARD VIEW -->
+    <div class="dashboard-view-container active-view" id="viewDashboard">
+      
+      <!-- Stats Summary Row -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon icon-blue">📂</div>
+          <div class="stat-info">
+            <span class="stat-label">標案草稿總數</span>
+            <span class="stat-number" id="statTotalCount">0</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-green">💰</div>
+          <div class="stat-info">
+            <span class="stat-label">累計總預算額</span>
+            <span class="stat-number" id="statTotalBudget">NT$ 0</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-amber">⚠️</div>
+          <div class="stat-info">
+            <span class="stat-label">未解法規警告</span>
+            <span class="stat-number" id="statWarningsCount">0</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-cyan">🎯</div>
+          <div class="stat-info">
+            <span class="stat-label">勞務/工程/財物</span>
+            <span class="stat-number" id="statRatioText">0 / 0 / 0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid for Charts & Search -->
+      <div class="dashboard-grid-upper">
+        <!-- Visual Charts Card -->
+        <div class="dashboard-card charts-card">
+          <h3 class="dashboard-card-title">採購數據可視化統計</h3>
+          <div class="charts-container">
+            <div class="chart-box">
+              <canvas id="categoryChart"></canvas>
+            </div>
+            <div class="chart-box">
+              <canvas id="budgetChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Law Search Card -->
+        <div class="dashboard-card search-card">
+          <h3 class="dashboard-card-title">政府採購法規與解釋函即時檢索</h3>
+          <div class="search-bar-wrapper">
+            <input type="text" id="lawSearchInput" placeholder="請輸入法規關鍵字（例如：限制性招標、分批、後續擴充、保險）" oninput="searchLaws()">
+            <button class="btn btn-primary btn-search" onclick="searchLaws()">搜尋</button>
+          </div>
+          <div class="search-results-list" id="searchResultsList">
+            <!-- Laws list populated here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Drafts Table List Card -->
+      <div class="dashboard-card drafts-list-card">
+        <h3 class="dashboard-card-title">機關採購標案列表</h3>
+        <div class="table-responsive">
+          <table class="drafts-table">
+            <thead>
+              <tr>
+                <th>採購案名</th>
+                <th>採購類別</th>
+                <th>預算金額</th>
+                <th>後續擴充</th>
+                <th>法規診斷狀態</th>
+                <th>最後更新時間</th>
+                <th style="text-align: right;">操作管理</th>
+              </tr>
+            </thead>
+            <tbody id="draftsTableBody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+        <div class="empty-state hidden" id="emptyState">
+          <div class="empty-state-icon">📁</div>
+          <h4>目前尚無任何標案草稿</h4>
+          <p>請點選上方「新建採購標案」啟動引導式問答系統。</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- VIEW 2: WIZARD & PREVIEW VIEW (SPLIT SCREEN) -->
+    <div class="wizard-view-container hidden" id="viewWizard">
+      <div class="split-view-grid">
+        
+        <!-- Left Panel: Guided Wizard -->
+        <section class="wizard-panel">
+          <!-- Progress Bar Step Indicators -->
+          <div class="progress-container">
+            <div class="progress-line-bg"></div>
+            <div class="progress-line-fill" id="progressLine"></div>
+            
+            <div class="step-indicator active" data-step="1" onclick="navigateToStep(1)">
+              1
+              <span class="step-label">類別與案名</span>
+            </div>
+            <div class="step-indicator" data-step="2" onclick="navigateToStep(2)">
+              2
+              <span class="step-label">金額級距</span>
+            </div>
+            <div class="step-indicator" data-step="3" onclick="navigateToStep(3)">
+              3
+              <span class="step-label">風險與保險</span>
+            </div>
+            <div class="step-indicator" data-step="4" onclick="navigateToStep(4)">
+              4
+              <span class="step-label">履約期限</span>
+            </div>
+          </div>
+
+          <!-- Wizard Form Content -->
+          <div class="wizard-content">
+            
+            <!-- STEP 1: Category & Name -->
+            <div class="wizard-step active" id="step1">
+              <div class="step-title-section">
+                <h2 class="step-title">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                  第一關：選擇採購類別與輸入案名
+                </h2>
+                <p class="step-subtitle">定義標案性質與案名（編輯時可隨時調整級距與條文連動）。</p>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">採購類別<span class="required">*</span></label>
+                <div class="category-grid">
+                  <div class="category-card selected" data-category="service" onclick="selectCategory('service')">
+                    <div class="category-icon">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    </div>
+                    <div class="category-title">勞務採購</div>
+                    <div class="category-desc">專業服務、技術服務、資訊服務、清潔委外等。</div>
+                  </div>
+                  <div class="category-card" data-category="property" onclick="selectCategory('property')">
+                    <div class="category-icon">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                    </div>
+                    <div class="category-title">財物採購</div>
+                    <div class="category-desc">主機設備、耗材買受、車輛、軟體授權等。</div>
+                  </div>
+                  <div class="category-card" data-category="engineering" onclick="selectCategory('engineering')">
+                    <div class="category-icon">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line></svg>
+                    </div>
+                    <div class="category-title">工程採購</div>
+                    <div class="category-desc">外牆補強、景觀工程、裝修、公共建設等。</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="procureName">採購案名<span class="required">*</span></label>
+                <div class="input-wrapper">
+                  <input type="text" id="procureName" placeholder="請輸入本案標案名稱" oninput="updateProcureName(this.value)">
+                </div>
+                
+                <div class="template-section">
+                  <div class="template-header">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A5.5 5.5 0 0 0 7.3 5.3M12 17h.01"></path><circle cx="12" cy="12" r="10"></circle></svg>
+                    經典範本快速填入
+                  </div>
+                  <div class="template-badge-group" id="templateBadges">
+                    <!-- Badges dynamically rendered -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- STEP 2: Amounts -->
+            <div class="wizard-step" id="step2">
+              <div class="step-title-section">
+                <h2 class="step-title">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12" y2="18.01"></line><path d="M17 12h.01M12 12h.01M7 12h.01M17 8h.01M12 8h.01M7 8h.01"></path></svg>
+                  第二關：本案預算與後續擴充額度
+                </h2>
+                <p class="step-subtitle">依政府採購法第二十二條第十一款及第七款後續擴充雙軌輸入。</p>
+              </div>
+
+              <div class="financial-grid">
+                <div class="form-group">
+                  <label class="form-label" for="budgetAmount">本案預算金額<span class="required">*</span></label>
+                  <div class="input-wrapper">
+                    <input type="number" id="budgetAmount" placeholder="請輸入預算金額" min="0" oninput="updateAmounts()">
+                    <span class="input-suffix">元</span>
+                  </div>
+                </div>
+                
+                <div class="form-group">
+                  <label class="form-label" for="expansionAmount">後續擴充金額 (選填)</label>
+                  <div class="input-wrapper">
+                    <input type="number" id="expansionAmount" placeholder="無則填 0" min="0" oninput="updateAmounts()">
+                    <span class="input-suffix">元</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="expansionReason">後續擴充條款與內容簡述</label>
+                <textarea id="expansionReason" rows="3" placeholder="請簡述後續擴充條款（例如：保留未來增購相同服務1年之權利）" oninput="updateExpansionReason(this.value)" disabled></textarea>
+              </div>
+
+              <div class="sum-card">
+                <div class="sum-label">總採購金額 (預算 + 後拓)</div>
+                <div class="sum-value" id="totalAmountText">
+                  0 <span class="sum-currency">元</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- STEP 3: Risks & Insurance / Bonds -->
+            <div class="wizard-step" id="step3">
+              <div class="step-title-section">
+                <h2 class="step-title">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                  第三關：風險控管、廠商保險與保證金
+                </h2>
+                <p class="step-subtitle">設定投保險種，系統依採購法規自動建議押標金及履約保證金比例。</p>
+              </div>
+
+              <!-- Bond Suggestions section -->
+              <div class="bond-suggestions-box">
+                <div class="bond-title">🎯 政府採購法保證金核算建議：</div>
+                <div class="bond-grid">
+                  <div class="bond-item">
+                    <span class="bond-label">建議押標金 (5%):</span>
+                    <span class="bond-value" id="suggestedBidBond">NT$ 0</span>
+                  </div>
+                  <div class="bond-item">
+                    <span class="bond-label">建議履約保證金 (10%):</span>
+                    <span class="bond-value" id="suggestedPerfBond">NT$ 0</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="financial-grid">
+                <div class="form-group">
+                  <label class="form-label" for="bidBondInput">本案規定押標金額度</label>
+                  <div class="input-wrapper">
+                    <input type="number" id="bidBondInput" placeholder="免收填 0" min="0" oninput="updateBonds()">
+                    <span class="input-suffix">元</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="perfBondInput">本案規定履約保證金額度</label>
+                  <div class="input-wrapper">
+                    <input type="number" id="perfBondInput" placeholder="免收填 0" min="0" oninput="updateBonds()">
+                    <span class="input-suffix">元</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">本案要求廠商投保之險種（可多選）</label>
+                <div class="insurance-options" id="insuranceOptions">
+                  <!-- Dynamic checkboxes -->
+                </div>
+              </div>
+
+              <div class="senior-tips-box">
+                <div class="senior-tips-header">💡 學長姐避坑建議 (Senior Tips)</div>
+                <div class="senior-tips-body" id="insuranceTips">
+                  請選擇採購類別以載入建議。
+                </div>
+              </div>
+            </div>
+
+            <!-- STEP 4: Period -->
+            <div class="wizard-step" id="step4">
+              <div class="step-title-section">
+                <h2 class="step-title">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                  第四關：履約期限（方式 C 混合制）
+                </h2>
+                <p class="step-subtitle">設定工期，系統自動依採購法錯誤態樣十（期限過短）進行合規診斷。</p>
+              </div>
+
+              <div class="sub-tabs">
+                <button class="sub-tab-btn active" id="tabPeriodDays" onclick="switchPeriodType('days')">履約天數制</button>
+                <button class="sub-tab-btn" id="tabPeriodDate" onclick="switchPeriodType('date')">特定日期制</button>
+              </div>
+
+              <!-- Tab: Days -->
+              <div class="time-option-panel active" id="panelPeriodDays">
+                <div class="form-group">
+                  <label class="form-label">履約期限天數與計算基準<span class="required">*</span></label>
+                  <div class="days-input-group">
+                    <div class="input-wrapper">
+                      <input type="number" id="periodDays" placeholder="例如：90" min="1" oninput="updatePeriodDays()">
+                      <span class="input-suffix">天</span>
+                    </div>
+                    <select id="periodDaysType" onchange="updatePeriodDays()">
+                      <option value="calendar">日曆天</option>
+                      <option value="working">工作天</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="periodDaysTrigger">履約起算點描述<span class="required">*</span></label>
+                  <input type="text" id="periodDaysTrigger" value="決標次日起" oninput="updatePeriodDays()">
+                </div>
+              </div>
+
+              <!-- Tab: Date -->
+              <div class="time-option-panel" id="panelPeriodDate">
+                <div class="form-group">
+                  <label class="form-label" for="periodDate">特定截止履約日期<span class="required">*</span></label>
+                  <input type="date" id="periodDate" onchange="updatePeriodDate()">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="periodDateDetail">履約期限其他附加說明</label>
+                  <input type="text" id="periodDateDetail" placeholder="例如：並於當日 17:00 前送達機關指定地點" oninput="updatePeriodDate()">
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Wizard Navigation Buttons -->
+          <div class="wizard-footer">
+            <div>
+              <button class="btn btn-secondary" id="btnPrev" onclick="prevStep()" disabled>上一步</button>
+              <button class="btn btn-primary" id="btnNext" onclick="nextStep()">下一步</button>
+            </div>
+            <div>
+              <button class="btn btn-secondary" onclick="exitWizard()">取消返回</button>
+              <button class="btn btn-export" onclick="saveProcurementDraft()">儲存至資料庫</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Right Panel: Diagnostics & Live Document Preview -->
+        <section class="right-panel">
+          
+          <!-- Law Guard Diagnostic Card -->
+          <div class="diagnostics-card">
+            <div class="diagnostics-header">
+              <div class="diagnostics-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                採購法規守門員 (AI Diagnosis)
+              </div>
+              <span class="procure-tier-tag" id="procureTierTag">金額未定</span>
+            </div>
+            <div class="diagnostics-list" id="diagnosticList">
+              <!-- Alerts rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Document Live Preview System -->
+          <div class="preview-card">
+            <div class="preview-tabs">
+              <button class="preview-tab-btn active" id="tabTendering" onclick="switchPreviewDoc('tendering')">
+                投標須知草案
+                <span class="badge-count" id="badgeTendering">0</span>
+              </button>
+              <button class="preview-tab-btn" id="tabContract" onclick="switchPreviewDoc('contract')">
+                契約書條款
+                <span class="badge-count" id="badgeContract">0</span>
+              </button>
+              <button class="preview-tab-btn" id="tabSow" onclick="switchPreviewDoc('sow')">
+                需求說明書
+                <span class="badge-count" id="badgeSow">0</span>
+              </button>
+            </div>
+            
+            <div class="legend-bar">
+              <div class="legend-item"><span class="legend-dot dot-national"></span>全國母軌 (標準)</div>
+              <div class="legend-item"><span class="legend-dot dot-agency"></span>機關子軌 (特別)</div>
+              <div class="legend-item"><span class="legend-dot dot-variable"></span>變數即時勾稽</div>
+            </div>
+
+            <div class="document-body" id="documentBody">
+              <!-- Document contents -->
+            </div>
+
+            <!-- Document Export Bar -->
+            <div style="padding: 1rem 1.5rem; background: rgba(11, 15, 25, 0.6); border-top: 1px solid var(--glass-border);">
+              <div class="export-panel">
+                <button class="btn btn-export" onclick="exportDocuments()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                  一鍵打包招標公文 (.docx)
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Load JS Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
