@@ -25,6 +25,10 @@ let activeDocTab = 'tendering';
 let categoryChartInstance = null;
 let budgetChartInstance = null;
 
+// PCC Templates Database
+let pccTemplates = [];
+let selectedPccTemplateIndex = null;
+
 // --- Law constants ---
 const LAW_CONSTANTS = {
   ANNOUNCEMENT_THRESHOLD: 1500000,
@@ -259,6 +263,7 @@ window.onload = function() {
   // Set default Wizard values
   renderTemplateBadges();
   renderInsuranceOptions();
+  loadPccTemplates();
 
   // Dynamically update server status label with current domain/IP or Offline mode status
   updateServerStatusLabel();
@@ -284,6 +289,88 @@ function updateServerStatusLabel() {
       statusLabel.innerText = `伺服器已連線 (${window.location.host})`;
     }
   }
+}
+
+// --- PCC Templates Database Loading & Handling ---
+async function loadPccTemplates() {
+  // Offline fallback database
+  const fallbackDb = [
+    { "title": "財物採購契約範本（1141230）", "summary": "適用於一般政府機關辦理財物採購（買受、租賃、定製）之契約條款。", "period_clause": "履約期限規定於第七條。", "insurance_clause": "辦理保險規定於第十條。" },
+    { "title": "資訊服務採購契約範本（1131226）", "summary": "適用於電腦軟硬體規劃、設計、開發、維護之委託服務。", "period_clause": "服務起迄時間與履約天數限制。", "insurance_clause": "應包含專業責任保險與雇主意外責任險。" },
+    { "title": "公共工程技術服務契約範本+（1150423）", "summary": "適用於委託規劃、設計、監造工程等技術顧問服務。", "period_clause": "履約時程與工程會規劃設計作業時程參考表。", "insurance_clause": "投保專業責任險與雇主責任險。" }
+  ];
+  
+  try {
+    const res = await fetch('data/templates_db.json');
+    if (res.ok) {
+      pccTemplates = await res.json();
+    } else {
+      pccTemplates = fallbackDb;
+    }
+  } catch (err) {
+    console.log("Failed to fetch templates_db.json, using fallbackDb:", err);
+    pccTemplates = fallbackDb;
+  }
+  
+  renderPccTemplateSelectOptions();
+}
+
+function renderPccTemplateSelectOptions() {
+  const select = document.getElementById('pccTemplateSelect');
+  if (!select) return;
+  
+  select.innerHTML = '<option value="">-- 請選擇欲採用的工程會範本 --</option>';
+  
+  pccTemplates.forEach((t, idx) => {
+    const opt = document.createElement('option');
+    opt.value = idx;
+    opt.innerText = t.title;
+    select.appendChild(opt);
+  });
+}
+
+function selectPccTemplate(indexVal) {
+  const introBox = document.getElementById('pccTemplateIntroBox');
+  if (indexVal === "" || !pccTemplates || pccTemplates.length === 0) {
+    selectedPccTemplateIndex = null;
+    if (introBox) introBox.classList.add('hidden');
+    return;
+  }
+  
+  selectedPccTemplateIndex = parseInt(indexVal);
+  const template = pccTemplates[selectedPccTemplateIndex];
+  if (!template) return;
+  
+  // Auto populate name if blank
+  const nameInput = document.getElementById('procureName');
+  if (nameInput && !nameInput.value.trim()) {
+    nameInput.value = template.title;
+    updateProcureName(template.title);
+  }
+  
+  if (introBox) {
+    introBox.classList.remove('hidden');
+    
+    // Format summary and clauses safely
+    const summaryClean = (template.summary || '暫無摘要').substring(0, 200).replace(/[\r\n]+/g, '<br>');
+    const periodClean = (template.period_clause || '依一般履約期限規定').substring(0, 150).replace(/[\r\n]+/g, ' ');
+    const insuranceClean = (template.insurance_clause || '依一般保險規定').substring(0, 150).replace(/[\r\n]+/g, ' ');
+    
+    introBox.innerHTML = `
+      <div class="senior-tips-header" style="color: var(--accent-cyan); font-weight:700;">📋 【已套用工程會範本】${template.title}</div>
+      <div class="senior-tips-body" style="font-size:0.75rem; color:var(--text-secondary); margin-top:5px; line-height:1.45;">
+        <strong>📄 範本前導摘要：</strong><br>
+        ${summaryClean}...<br><br>
+        <strong>⏰ 履約期限規範（第七條/本案指引）：</strong><br>
+        ${periodClean}...<br><br>
+        <strong>🛡️ 投保險種及額度建議（第十條/本案指引）：</strong><br>
+        ${insuranceClean}...
+      </div>
+    `;
+  }
+  
+  // Trigger preview documents render to inject pcc clauses
+  renderPreviewDocuments();
 }
 
 // --- Navigation: Switch Dashboard vs Wizard views ---
@@ -1284,6 +1371,15 @@ function renderPreviewDocuments() {
           </tbody>
         </table>
         
+        ${selectedPccTemplateIndex !== null && pccTemplates[selectedPccTemplateIndex] && pccTemplates[selectedPccTemplateIndex].period_clause ? `
+        <div style="margin-top: 15px; border-left: 3px solid var(--accent-cyan); padding-left: 10px; background: rgba(6, 182, 212, 0.02); padding: 8px 12px; border-radius: var(--radius-sm);">
+          <p class="doc-p" style="color: var(--accent-cyan); font-weight:bold; font-size:0.8rem; margin-bottom:5px;">📋 【工程會 ${pccTemplates[selectedPccTemplateIndex].title} 履約期限第七條原文參考】</p>
+          <p class="doc-p" style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.45; margin-bottom:0;">
+            ${pccTemplates[selectedPccTemplateIndex].period_clause.substring(0, 700).replace(/\r\n/g, '<br>').replace(/\n/g, '<br>')}...
+          </p>
+        </div>
+        ` : ''}
+        
         <div style="margin-top: 30px; border-top: 1px dashed var(--glass-border); padding-top: 15px;">
           <p class="doc-p"><strong>【立契約書人簽章區】</strong></p>
           <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary);">
@@ -1310,6 +1406,15 @@ function renderPreviewDocuments() {
         <p class="doc-p">一、本專案委託辦理之名稱：<span class="h-variable">${nameDisplay}</span>。</p>
         <p class="doc-p">二、履行標的範疇：<br>廠商應遵循政府採購法第 26 條規定，所提供之硬體、材料或服務規格，均為一般通用規格，<span class="h-agency">且廠商所檢附或交貨之設備，如有指定特定廠牌型號時，應加註「或同等品」且不得限制特定產地。</span></p>
         <p class="doc-p">三、交付成果與驗收機制：<br><span class="h-agency">廠商完成履約工作後應提報書面結案審查報告，機關將於收到報告 15 日內辦理審查驗收，若因不符需求規格而退件，廠商應於機關通知之期限內改善完畢。</span></p>
+        
+        ${selectedPccTemplateIndex !== null && pccTemplates[selectedPccTemplateIndex] && pccTemplates[selectedPccTemplateIndex].summary ? `
+        <div style="margin-top: 15px; border-left: 3px solid var(--accent-emerald); padding-left: 10px; background: rgba(16, 185, 129, 0.02); padding: 8px 12px; border-radius: var(--radius-sm);">
+          <p class="doc-p" style="color: var(--accent-emerald); font-weight:bold; font-size:0.8rem; margin-bottom:5px;">📋 【工程會 ${pccTemplates[selectedPccTemplateIndex].title} 前言與規格綱要】</p>
+          <p class="doc-p" style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.45; margin-bottom:0;">
+            ${pccTemplates[selectedPccTemplateIndex].summary.substring(0, 600).replace(/\r\n/g, '<br>').replace(/\n/g, '<br>')}...
+          </p>
+        </div>
+        ` : ''}
       </div>
     `;
   }
@@ -1428,7 +1533,15 @@ function exportDocuments() {
       </tbody>
     </table>
     
-    <h2>第六條：合約立書簽署人</h2>
+    ${selectedPccTemplateIndex !== null && pccTemplates[selectedPccTemplateIndex] && pccTemplates[selectedPccTemplateIndex].period_clause ? `
+    <h2>第六條：工程會 ${pccTemplates[selectedPccTemplateIndex].title} 特約條款參考</h2>
+    <p><strong>【履約期限條款原文】</strong></p>
+    <p style="font-size: 10pt; color: #475569; background-color: #f8fafc; padding: 10px; border-left: 3px solid #0ea5e9;">
+      ${pccTemplates[selectedPccTemplateIndex].period_clause.replace(/\r\n/g, '<br>').replace(/\n/g, '<br>')}
+    </p>
+    ` : ''}
+    
+    <h2>${selectedPccTemplateIndex !== null ? '第七條' : '第六條'}：合約立書簽署人</h2>
     <p>本契約正本二份，甲乙雙方各執一份；副本四份，由雙方分送相關單位存查。</p>
     <div style="margin-top: 30px;">
       <table style="border:none;">
