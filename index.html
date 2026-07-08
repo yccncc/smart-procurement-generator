@@ -3615,6 +3615,17 @@ function exportDocuments() {
     `;
   };
 
+  const periodText = periodType === 'days' 
+    ? `${periodDaysTrigger} ${periodDays} 天 (${periodDaysType === 'working' ? '工作天' : '日曆天'})`
+    : `於 ${periodDate} 前履約完畢 (${periodDateDetail || '無'})`;
+    
+  const insuranceDetails = selectedInsurances.includes('none') || selectedInsurances.length === 0
+    ? '免收保險費'
+    : (INSURANCE_DB[selectedCategory] || [])
+        .filter(item => selectedInsurances.includes(item.id))
+        .map(item => item.title.split(' (')[0])
+        .join('、');
+
   const bidBondText = bidBond > 0 ? `${bidBond.toLocaleString('zh-TW')}元` : '免收';
   const perfBondText = perfBond > 0 ? `${perfBond.toLocaleString('zh-TW')}元` : '免收';
   const budgetFormatted = budgetAmount > 0 ? `${budgetAmount.toLocaleString('zh-TW')}元` : '[預算尚未填寫]';
