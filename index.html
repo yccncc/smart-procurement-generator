@@ -3299,70 +3299,175 @@ function renderPreviewDocuments() {
   
   if (activeDocTab === 'tendering') {
     html = `
-      <div class="doc-section active">
-        <h1 class="doc-h1">投標須知 (工程會公告金額以上招標投標標準範本)</h1>
-        <p class="doc-p">一、本案採購名稱為：<span class="h-variable">${nameDisplay}</span>。</p>
-        <p class="doc-p">二、本案資金來源及預算額度：</p>
-        <p class="doc-p" style="text-indent: 20px;">
-          本案預算金額為新臺幣 <span class="h-variable">${budgetFormatted}</span>。
-          ${expansionAmount > 0 ? `本採購案保留後續擴充額度為新臺幣 <span class="h-variable">${expansionFormatted}</span>。` : ''}
-          <span class="h-national">總計採購金額 (為級距認定基準) 為新臺幣</span> <span class="h-variable">${totalFormatted}</span>，
-          判定為 <span class="h-national">${document.getElementById('procureTierTag').innerText}</span> 級距。
+      <div class="doc-section active" style="font-family: 'Noto Sans TC', sans-serif;">
+        <h1 class="doc-h1">【招標文件】政府採購投標須知範本</h1>
+        <p class="doc-p" style="font-size: 0.75rem; color: var(--text-muted); border-bottom: 1px solid var(--glass-border); padding-bottom: 8px; margin-bottom: 12px;">
+          （依據公共工程委員會最新修訂標準投標須知格式呈現）
         </p>
+        
+        <p class="doc-p"><strong>一、本採購適用政府採購法(以下簡稱採購法)及其主管機關所訂定之規定。</strong></p>
+        
+        <p class="doc-p"><strong>二、本標案名稱：</strong><span class="h-variable" style="font-size:0.95rem; font-weight:600;">${nameDisplay}</span></p>
+        
+        <p class="doc-p"><strong>三、採購標的為：</strong><br>
+          <span style="margin-left: 15px; font-weight: 500;">${selectedCategory === 'engineering' ? '☑' : '☐'} (1) 工程。</span><br>
+          <span style="margin-left: 15px; font-weight: 500;">${selectedCategory === 'property' ? '☑' : '☐'} (2) 財物。</span><br>
+          <span style="margin-left: 15px; font-weight: 500;">${selectedCategory === 'service' ? '☑' : '☐'} (3) 勞務。</span>
+        </p>
+        
+        <p class="doc-p"><strong>四、本採購屬：</strong><span class="h-national" style="font-weight:600;">${document.getElementById('procureTierTag').innerText}</span></p>
+        
+        <p class="doc-p"><strong>五、本採購預算金額：</strong>新臺幣 <span class="h-variable">${budgetFormatted}</span></p>
+        
         ${expansionAmount > 0 ? `
-        <p class="doc-p">三、後續擴充權利聲明：<br><span class="h-agency">${expansionReason}</span></p>
+        <p class="doc-p"><strong>六、後續擴充約定：</strong>本採購保留未來向得標廠商增購之權利，後續擴充金額上限為新臺幣 <span class="h-variable">${expansionFormatted}</span>。</p>
         ` : ''}
-        <p class="doc-p">四、押標金規定：<br><span class="h-national">投標廠商應依本須知向招標機關繳納押標金：</span> <span class="h-variable">${bidBondText}</span>。</p>
-        <p class="doc-p">五、履約保證金規定：<br><span class="h-national">得標廠商應於決標次日起 14 日內，繳納履約保證金：</span> <span class="h-variable">${perfBondText}</span>。</p>
+        
+        <p class="doc-p"><strong>七、招標方式為：</strong><br>
+          <span style="margin-left: 15px; font-weight: 500;">${budgetAmount >= LAW_CONSTANTS.ANNOUNCEMENT_THRESHOLD ? '☑' : '☐'} (1) 公開招標。</span><br>
+          <span style="margin-left: 15px; font-weight: 500;">${budgetAmount < LAW_CONSTANTS.ANNOUNCEMENT_THRESHOLD ? '☑' : '☐'} (2) 依採購法第49條規定公開取得書面報價或企劃書。本案業經核准本次公告未能取得3家以上廠商之書面報價時，改採限制性招標方式辦理。</span>
+        </p>
+        
+        <p class="doc-p"><strong>八、共同投標：</strong><br>
+          <span style="margin-left: 15px; font-weight: 500;">☑ 不允許廠商共同投標。</span>
+        </p>
+        
+        <p class="doc-p"><strong>九、投標文件使用文字：</strong><br>
+          <span style="margin-left: 15px; font-weight: 500;">☑ 中文(正體字)。</span>
+        </p>
+        
+        <p class="doc-p"><strong>十、押標金金額：</strong><br>
+          <span style="margin-left: 15px; font-weight: 500;">☑ ${bidBond > 0 ? `應繳納押標金新臺幣 <span class="h-variable">${bidBondText}</span>` : '免收押標金'}。</span>
+        </p>
+        
+        <p class="doc-p"><strong>十一、履約保證金金額：</strong><br>
+          <span style="margin-left: 15px; font-weight: 500;">☑ ${perfBond > 0 ? `應繳納履約保證金新臺幣 <span class="h-variable">${perfBondText}</span>` : '免收履約保證金'}。</span>
+        </p>
+        
+        <p class="doc-p"><strong>十二、投標文件有效期：</strong>自投標時起至開標後 30 日止。</p>
+        
+        <p class="doc-p"><strong>十三、受理廠商異議之機關：</strong>同招標機關。</p>
       </div>
     `;
   } else if (activeDocTab === 'contract') {
-    html = `
-      <div class="doc-section active">
-        <h1 class="doc-h1">契約書草案 (標準條款合流版)</h1>
-        <p class="doc-p">第一條：契約履行標的<br>廠商應依本案之規格與需求說明書辦理「<span class="h-variable">${nameDisplay}</span>」。</p>
-        <p class="doc-p">第二條：履約期限<br><span class="h-agency">本案工期計算與起點約定如下：</span> ${periodText}。</p>
-        <p class="doc-p">第三條：廠商保險責任<br><span class="h-national">廠商應自履約日起辦理投保，保險單須報機關備查。投保項目包含：</span> ${insuranceText}。</p>
-        
-        <p class="doc-p">第四條：契約價金明細表：</p>
-        <table class="doc-table">
-          <thead>
-            <tr><th>品項/服務名稱</th><th>單位</th><th>數量</th><th>預算單價</th><th>備註</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>${nameDisplay}主體項目</td><td>式</td><td>1</td><td>${budgetFormatted}</td><td>核實支付</td></tr>
-            ${expansionAmount > 0 ? `<tr><td>後續擴充增購保留項</td><td>式</td><td>1</td><td>${expansionFormatted}</td><td>依擴充條款辦理</td></tr>` : ''}
-          </tbody>
-        </table>
-        
-        ${selectedPccTemplateIndex !== null && pccTemplates[selectedPccTemplateIndex] && pccTemplates[selectedPccTemplateIndex].period_clause ? `
-        <div style="margin-top: 15px; border-left: 3px solid var(--accent-cyan); padding-left: 10px; background: rgba(6, 182, 212, 0.02); padding: 8px 12px; border-radius: var(--radius-sm);">
-          <p class="doc-p" style="color: var(--accent-cyan); font-weight:bold; font-size:0.8rem; margin-bottom:5px;">📋 【工程會 ${pccTemplates[selectedPccTemplateIndex].title} 履約期限第七條原文參考】</p>
-          <p class="doc-p" style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.45; margin-bottom:0;">
-            ${pccTemplates[selectedPccTemplateIndex].period_clause.substring(0, 700).replace(/\r\n/g, '<br>').replace(/\n/g, '<br>')}...
+    if (selectedPccTemplateIndex !== null && pccTemplates[selectedPccTemplateIndex]) {
+      const t = pccTemplates[selectedPccTemplateIndex];
+      const summaryClean = (t.summary || '本契約以採用主管機關訂定之範本為原則，以降低個案採購契約不完整之情形。').substring(0, 500).replace(/[\r\n]+/g, '<br>').replace(/\n/g, '<br>');
+      const periodClean = (t.period_clause || '履約期限係指乙方完成履約標的之所需時間。').substring(0, 600).replace(/[\r\n]+/g, '<br>').replace(/\n/g, '<br>');
+      const insuranceClean = (t.insurance_clause || '乙方應於履約期間辦理營造綜合保險、雇主意外責任險或專業責任險。').substring(0, 500).replace(/[\r\n]+/g, '<br>').replace(/\n/g, '<br>');
+      const bondClean = (t.bond_clause || '得標廠商應於決標次日起14日內繳納履約保證金。').substring(0, 500).replace(/[\r\n]+/g, '<br>').replace(/\n/g, '<br>');
+      
+      html = `
+        <div class="doc-section active" style="font-family: 'Noto Sans TC', sans-serif;">
+          <h1 class="doc-h1">【契約條款】${t.title}草案</h1>
+          <p class="doc-p" style="font-size: 0.75rem; color: var(--text-muted); border-bottom: 1px solid var(--glass-border); padding-bottom: 8px; margin-bottom: 12px;">
+            （本契約條款依據已選用之工程會官方範本動態生成）
           </p>
-        </div>
-        ` : ''}
-        
-        <div style="margin-top: 30px; border-top: 1px dashed var(--glass-border); padding-top: 15px;">
-          <p class="doc-p"><strong>【立契約書人簽章區】</strong></p>
-          <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary);">
-            <div>
-              <p><strong>甲方 (招標機關)</strong></p>
-              <p>名稱：中華民國政府指派機關</p>
-              <p>代表人：機關首長官印</p>
-              <p>地址：機關登載地址</p>
+          
+          <p class="doc-p"><strong>立契約人：</strong> 委託機關（以下簡稱甲方）與得標廠商（以下簡稱乙方），雙方同意依政府採購法及招標文件規定，共同遵守本契約所有條款。</p>
+          
+          <p class="doc-p"><strong>第一條：契約文件與效力</strong><br>
+            契約包括招標文件、投標文件、決標文件及其變更或補充。以下為本契約範本之適用說明與前言：
+            <div style="font-size: 0.78rem; color: var(--text-secondary); background: rgba(6, 182, 212, 0.03); padding: 8px 12px; border-left: 3px solid var(--accent-cyan); margin: 8px 0; line-height: 1.45; border-radius: var(--radius-sm);">
+              ${summaryClean}...
             </div>
-            <div>
-              <p><strong>乙方 (得標廠商)</strong></p>
-              <p>名稱：得標企業法人股份有限公司</p>
-              <p>代表人：董事長專用印信</p>
-              <p>統一編號：[得標後填入]</p>
+          </p>
+          
+          <p class="doc-p"><strong>第二條：契約價金之給付</strong><br>
+            本案契約上限總金額為新臺幣 <span class="h-variable">${budgetFormatted}</span>，實際給付價金依開標決標紀錄之金額核算之。
+            ${expansionAmount > 0 ? `本契約保留後續擴充項目金額新臺幣 <span class="h-variable">${expansionFormatted}</span>，得依採購法規定辦理增購。` : ''}
+          </p>
+          
+          <p class="doc-p"><strong>第三條：履約期限（第七條原文）</strong><br>
+            本案履約工期設定為：${periodText}。
+            <div style="font-size: 0.78rem; color: var(--text-secondary); background: rgba(6, 182, 212, 0.03); padding: 8px 12px; border-left: 3px solid var(--accent-cyan); margin: 8px 0; line-height: 1.45; border-radius: var(--radius-sm);">
+              ${periodClean}...
+            </div>
+          </p>
+          
+          <p class="doc-p"><strong>第四條：廠商保證金責任</strong><br>
+            得標廠商應繳納履約保證金新臺幣：<span class="h-variable">${perfBondText}</span>。
+            <div style="font-size: 0.78rem; color: var(--text-secondary); background: rgba(6, 182, 212, 0.03); padding: 8px 12px; border-left: 3px solid var(--accent-cyan); margin: 8px 0; line-height: 1.45; border-radius: var(--radius-sm);">
+              ${bondClean}...
+            </div>
+          </p>
+          
+          <p class="doc-p"><strong>第五條：廠商保險責任（第十條原文）</strong><br>
+            廠商應自履約日起辦理投保，保險項目包含：${insuranceText}。
+            <div style="font-size: 0.78rem; color: var(--text-secondary); background: rgba(6, 182, 212, 0.03); padding: 8px 12px; border-left: 3px solid var(--accent-cyan); margin: 8px 0; line-height: 1.45; border-radius: var(--radius-sm);">
+              ${insuranceClean}...
+            </div>
+          </p>
+          
+          <p class="doc-p"><strong>第六條：契約價金明細表：</strong></p>
+          <table class="doc-table">
+            <thead>
+              <tr><th>品項/服務名稱</th><th>單位</th><th>數量</th><th>預算單價</th><th>備註</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>${nameDisplay}主體項目</td><td>式</td><td>1</td><td>${budgetFormatted}</td><td>核實支付</td></tr>
+              ${expansionAmount > 0 ? `<tr><td>後續擴充增購項目</td><td>式</td><td>1</td><td>${expansionFormatted}</td><td>依擴充條款辦理</td></tr>` : ''}
+            </tbody>
+          </table>
+          
+          <div style="margin-top: 30px; border-top: 1px dashed var(--glass-border); padding-top: 15px;">
+            <p class="doc-p"><strong>【立契約書人簽章區】</strong></p>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary);">
+              <div>
+                <p><strong>甲方 (招標機關)</strong></p>
+                <p>名稱：中華民國政府指派機關</p>
+                <p>代表人：機關首長官印</p>
+                <p>地址：機關登載地址</p>
+              </div>
+              <div>
+                <p><strong>乙方 (得標廠商)</strong></p>
+                <p>名稱：得標企業法人股份有限公司</p>
+                <p>代表人：董事長專用印信</p>
+                <p>統一編號：[得標後填入]</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    `;
+      `;
+    } else {
+      html = `
+        <div class="doc-section active">
+          <h1 class="doc-h1">契約書草案 (標準條款合流版)</h1>
+          <p class="doc-p">第一條：契約履行標的<br>廠商應依本案之規格與需求說明書辦理「<span class="h-variable">${nameDisplay}</span>」。</p>
+          <p class="doc-p">第二條：履約期限<br><span class="h-agency">本案工期計算與起點約定如下：</span> ${periodText}。</p>
+          <p class="doc-p">第三條：廠商保險責任<br><span class="h-national">廠商應自履約日起辦理投保，保險單須報機關備查。投保項目包含：</span> ${insuranceText}。</p>
+          
+          <p class="doc-p">第四條：契約價金明細表：</p>
+          <table class="doc-table">
+            <thead>
+              <tr><th>品項/服務名稱</th><th>單位</th><th>數量</th><th>預算單價</th><th>備註</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>${nameDisplay}主體項目</td><td>式</td><td>1</td><td>${budgetFormatted}</td><td>核實支付</td></tr>
+              ${expansionAmount > 0 ? `<tr><td>後續擴充增購保留項</td><td>式</td><td>1</td><td>${expansionFormatted}</td><td>依擴充條款辦理</td></tr>` : ''}
+            </tbody>
+          </table>
+          
+          <div style="margin-top: 30px; border-top: 1px dashed var(--glass-border); padding-top: 15px;">
+            <p class="doc-p"><strong>【立契約書人簽章區】</strong></p>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary);">
+              <div>
+                <p><strong>甲方 (招標機關)</strong></p>
+                <p>名稱：中華民國政府指派機關</p>
+                <p>代表人：機關首長官印</p>
+                <p>地址：機關登載地址</p>
+              </div>
+              <div>
+                <p><strong>乙方 (得標廠商)</strong></p>
+                <p>名稱：得標企業法人股份有限公司</p>
+                <p>代表人：董事長專用印信</p>
+                <p>統一編號：[得標後填入]</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
   } else if (activeDocTab === 'sow') {
     html = `
       <div class="doc-section active">
@@ -3440,92 +3545,185 @@ function exportDocuments() {
     `;
   };
 
-  const periodText = periodType === 'days' 
-    ? `${periodDaysTrigger} ${periodDays} 天 (${periodDaysType === 'working' ? '工作天' : '日曆天'})`
-    : `於 ${periodDate} 前履約完畢 (${periodDateDetail || '無'})`;
-    
-  const insuranceDetails = selectedInsurances.includes('none')
-    ? '免收保險費'
-    : INSURANCE_DB[selectedCategory]
-        .filter(item => selectedInsurances.includes(item.id))
-        .map(item => item.title.split(' (')[0])
-        .join('、');
+  const bidBondText = bidBond > 0 ? `${bidBond.toLocaleString('zh-TW')}元` : '免收';
+  const perfBondText = perfBond > 0 ? `${perfBond.toLocaleString('zh-TW')}元` : '免收';
+  const budgetFormatted = budgetAmount > 0 ? `${budgetAmount.toLocaleString('zh-TW')}元` : '[預算尚未填寫]';
+  const expansionFormatted = expansionAmount > 0 ? `${expansionAmount.toLocaleString('zh-TW')}元` : '無';
 
   const tenderingBody = `
-    <h1>${procureName} - 招標投標須知</h1>
+    <h1>【招標文件】政府採購投標須知範本</h1>
+    <p style="font-size: 9.5pt; text-align: center; color: #475569;">（依據公共工程委員會最新修訂標準投標須知格式呈現）</p>
     
-    <h2>第一章 總則與標案基本資訊</h2>
-    <p>一、本案採購名稱：<span class="highlight-var">${procureName}</span></p>
-    <p>二、本案採購級距：本採購案預算金額為新臺幣 <span class="highlight-var">${budgetAmount.toLocaleString('zh-TW')}元</span>。
-    ${expansionAmount > 0 ? `保留後續擴充金額為新臺幣 <span class="highlight-var">${expansionAmount.toLocaleString('zh-TW')}元</span>。` : ''}
-    總採購金額達新臺幣 <span class="highlight-var">${(budgetAmount + expansionAmount).toLocaleString('zh-TW')}元</span>，
-    屬 <span class="highlight-var">${document.getElementById('procureTierTag').innerText}</span>。</p>
+    <p><strong>一、本採購適用政府採購法(以下簡稱採購法)及其主管機關所訂定之規定。</strong></p>
     
-    <h2>第二章 廠商投保與保證金細則</h2>
-    <p class="highlight-nat">三、押標金繳納：廠商應於截標期限前，向機關繳納押標金為新臺幣：<strong>${bidBond > 0 ? bidBond.toLocaleString('zh-TW') + '元' : '免收'}</strong>。</p>
-    <p class="highlight-nat">四、履約保證金繳納：得標廠商應於決標次日起 14 日內，繳納履約保證金新臺幣：<strong>${perfBond > 0 ? perfBond.toLocaleString('zh-TW') + '元' : '免收'}</strong>。</p>
+    <p><strong>二、本標案名稱：</strong><span class="highlight-var">${procureName}</span></p>
     
-    <h2>第三章 其他規定</h2>
-    ${expansionAmount > 0 ? `<p class="highlight-age">五、後續擴充說明：${expansionReason}</p>` : ''}
-    <p>六、本投標須知未規範事項，悉依中華民國政府採購法及公共工程委員會最新範本辦理。</p>
-  `;
-
-  const contractBody = `
-    <h1>${procureName} - 契約條款書</h1>
-    <p>機關（以下簡稱甲方）與得標廠商（以下簡稱乙方），雙方同意就「${procureName}」之履約管理約定如下條款：</p>
-    
-    <h2>第一條：履約內容與標的</h2>
-    <p>乙方應依本案招標規格書，確實辦理並履行本採購合約。</p>
-    
-    <h2>第二條：契約價金給付上限</h2>
-    <p class="highlight-nat">本案契約上限總金額為新臺幣 <span class="highlight-var">${budgetAmount.toLocaleString('zh-TW')}元整</span>，實際給付價金依開標決標紀錄之金額核算之。</p>
-    
-    <h2>第三條：契約履約期限</h2>
-    <p class="highlight-age">履約工期：乙方應於 <span class="highlight-var">${periodText}</span> 內完成履約義務。</p>
-    
-    <h2>第四條：保險項目約定</h2>
-    <p class="highlight-nat">乙方應於開工日起辦理投保，保險單及繳費收據影本應於14日內送交甲方備查。投保險種為：<span class="highlight-var">${insuranceDetails || '免收保險'}</span>。</p>
-    
-    <h2>第五條：契約價金明細表</h2>
-    <table>
-      <thead>
-        <tr><th>品項/項目名稱</th><th>單位</th><th>數量</th><th>預算單價 (元)</th><th>備註</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>${procureName} 主體履約標的</td><td>式</td><td>1</td><td>${budgetAmount.toLocaleString('zh-TW')}</td><td>核實支付</td></tr>
-        ${expansionAmount > 0 ? `<tr><td>後續擴充項目保留款</td><td>式</td><td>1</td><td>${expansionAmount.toLocaleString('zh-TW')}</td><td>依後拓約定辦理</td></tr>` : ''}
-      </tbody>
-    </table>
-    
-    ${selectedPccTemplateIndex !== null && pccTemplates[selectedPccTemplateIndex] && pccTemplates[selectedPccTemplateIndex].period_clause ? `
-    <h2>第六條：工程會 ${pccTemplates[selectedPccTemplateIndex].title} 特約條款參考</h2>
-    <p><strong>【履約期限條款原文】</strong></p>
-    <p style="font-size: 10pt; color: #475569; background-color: #f8fafc; padding: 10px; border-left: 3px solid #0ea5e9;">
-      ${pccTemplates[selectedPccTemplateIndex].period_clause.replace(/\r\n/g, '<br>').replace(/\n/g, '<br>')}
+    <p><strong>三、採購標的為：</strong><br>
+      <span style="margin-left: 20px;">${selectedCategory === 'engineering' ? '☑' : '☐'} (1) 工程。</span><br>
+      <span style="margin-left: 20px;">${selectedCategory === 'property' ? '☑' : '☐'} (2) 財物。</span><br>
+      <span style="margin-left: 20px;">${selectedCategory === 'service' ? '☑' : '☐'} (3) 勞務。</span>
     </p>
+    
+    <p><strong>四、本採購屬：</strong><span class="highlight-var">${document.getElementById('procureTierTag').innerText}</span></p>
+    
+    <p><strong>五、本採購預算金額：</strong>新臺幣 <span class="highlight-var">${budgetFormatted}</span></p>
+    
+    ${expansionAmount > 0 ? `
+    <p><strong>六、後續擴充約定：</strong>本採購保留未來向得標廠商增購之權利，後續擴充金額上限為新臺幣 <span class="highlight-var">${expansionFormatted}</span>。</p>
     ` : ''}
     
-    <h2>${selectedPccTemplateIndex !== null ? '第七條' : '第六條'}：合約立書簽署人</h2>
-    <p>本契約正本二份，甲乙雙方各執一份；副本四份，由雙方分送相關單位存查。</p>
-    <div style="margin-top: 30px;">
-      <table style="border:none;">
-        <tr style="border:none;">
-          <td style="border:none; width: 50%;">
-            <strong>甲方 (招標機關)</strong><br>
-            名稱：中華民國政府授權採購機關<br>
-            代表人：首長印信專區<br>
-            地址：台北市中正區行政大樓
-          </td>
-          <td style="border:none; width: 50%;">
-            <strong>乙方 (得標廠商)</strong><br>
-            名稱：得標廠商企業股份有限公司<br>
-            代表人：負責人與公司大小章專區<br>
-            地址：[得標後確實填寫]
-          </td>
-        </tr>
-      </table>
-    </div>
+    <p><strong>七、招標方式為：</strong><br>
+      <span style="margin-left: 20px;">${budgetAmount >= LAW_CONSTANTS.ANNOUNCEMENT_THRESHOLD ? '☑' : '☐'} (1) 公開招標。</span><br>
+      <span style="margin-left: 20px;">${budgetAmount < LAW_CONSTANTS.ANNOUNCEMENT_THRESHOLD ? '☑' : '☐'} (2) 依採購法第49條規定公開取得書面報價或企劃書。本案業經核准本次公告未能取得3家以上廠商之書面報價時，改採限制性招標方式辦理。</span>
+    </p>
+    
+    <p><strong>八、共同投標：</strong><br>
+      <span style="margin-left: 20px;">☑ 不允許廠商共同投標。</span>
+    </p>
+    
+    <p><strong>九、投標文件使用文字：</strong><br>
+      <span style="margin-left: 20px;">☑ 中文(正體字)。</span>
+    </p>
+    
+    <p><strong>十、押標金金額：</strong><br>
+      <span style="margin-left: 20px;">☑ ${bidBond > 0 ? `應繳納押標金新臺幣 <span class="highlight-var">${bidBondText}</span>` : '免收押標金'}。</span>
+    </p>
+    
+    <p><strong>十一、履約保證金金額：</strong><br>
+      <span style="margin-left: 20px;">☑ ${perfBond > 0 ? `應繳納履約保證金新臺幣 <span class="highlight-var">${perfBondText}</span>` : '免收履約保證金'}。</span>
+    </p>
+    
+    <p><strong>十二、投標文件有效期：</strong>自投標時起至開標後 30 日止。</p>
+    <p><strong>十三、受理廠商異議之機關：</strong>同招標機關。</p>
   `;
+
+  let contractBody = '';
+  if (selectedPccTemplateIndex !== null && pccTemplates[selectedPccTemplateIndex]) {
+    const t = pccTemplates[selectedPccTemplateIndex];
+    const summaryClean = (t.summary || '本契約以採用主管機關訂定之範本為原則，以降低個案採購契約不完整之情形。').replace(/[\r\n]+/g, '<br>').replace(/\n/g, '<br>');
+    const periodClean = (t.period_clause || '履約期限係指乙方完成履約標的之所需時間。').replace(/[\r\n]+/g, '<br>').replace(/\n/g, '<br>');
+    const insuranceClean = (t.insurance_clause || '乙方應於履約期間辦理營造綜合保險、雇主意外責任險或專業責任險。').replace(/[\r\n]+/g, '<br>').replace(/\n/g, '<br>');
+    const bondClean = (t.bond_clause || '得標廠商應於決標次日起14日內繳納履約保證金。').replace(/[\r\n]+/g, '<br>').replace(/\n/g, '<br>');
+    
+    contractBody = `
+      <h1>【契約條款】${t.title}草案</h1>
+      <p style="font-size: 9.5pt; text-align: center; color: #475569;">（本契約條款依據已選用之工程會官方範本動態生成）</p>
+      
+      <p><strong>立契約人：</strong> 委託機關（以下簡稱甲方）與得標廠商（以下簡稱乙方），雙方同意依政府採購法及招標文件規定，共同遵守本契約所有條款。</p>
+      
+      <h2>第一條：契約文件與效力</h2>
+      <p>契約包括招標文件、投標文件、決標文件及其變更或補充。以下為本契約範本之適用說明與前言：</p>
+      <p style="font-size: 10pt; color: #475569; background-color: #f8fafc; padding: 10px; border-left: 3px solid #0284c7;">
+        ${summaryClean}
+      </p>
+      
+      <h2>第二條：契約價金之給付</h2>
+      <p>本案契約上限總金額為新臺幣 <span class="highlight-var">${budgetFormatted}</span>，實際給付價金依開標決標紀錄之金額核算之。
+      ${expansionAmount > 0 ? `本採購案保留後續擴充項目金額新臺幣 <span class="highlight-var">${expansionFormatted}</span>，得依採購法規定辦理增購。` : ''}</p>
+      
+      <h2>第三條：契約履約期限</h2>
+      <p>本案履約工期設定為：<span class="highlight-var">${periodText}</span>。</p>
+      <p style="font-size: 10pt; color: #475569; background-color: #f8fafc; padding: 10px; border-left: 3px solid #0284c7;">
+        <strong>【工程會契約範本第七條原文參考】</strong><br>
+        ${periodClean}
+      </p>
+      
+      <h2>第四條：廠商保證金責任</h2>
+      <p>得標廠商應繳納履約保證金新臺幣：<span class="highlight-var">${perfBondText}</span>。</p>
+      <p style="font-size: 10pt; color: #475569; background-color: #f8fafc; padding: 10px; border-left: 3px solid #0284c7;">
+        <strong>【工程會契約範本保證金條款原文參考】</strong><br>
+        ${bondClean}
+      </p>
+      
+      <h2>第五條：廠商保險責任</h2>
+      <p>廠商應自履約日起辦理投保，保險項目包含：<span class="highlight-var">${insuranceDetails || '免收保險'}</span>。</p>
+      <p style="font-size: 10pt; color: #475569; background-color: #f8fafc; padding: 10px; border-left: 3px solid #0284c7;">
+        <strong>【工程會契約範本第十條原文參考】</strong><br>
+        ${insuranceClean}
+      </p>
+      
+      <h2>第六條：契約價金明細表</h2>
+      <table>
+        <thead>
+          <tr><th>品項/項目名稱</th><th>單位</th><th>數量</th><th>預算單價 (元)</th><th>備註</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>${procureName} 主體履約標的</td><td>式</td><td>1</td><td>${budgetAmount.toLocaleString('zh-TW')}</td><td>核實支付</td></tr>
+          ${expansionAmount > 0 ? `<tr><td>後續擴充項目保留款</td><td>式</td><td>1</td><td>${expansionAmount.toLocaleString('zh-TW')}</td><td>依後拓約定辦理</td></tr>` : ''}
+        </tbody>
+      </table>
+      
+      <h2>第七條：合約立書簽署人</h2>
+      <p>本契約正本二份，甲乙雙方各執一份；副本四份，由雙方分送相關單位存查。</p>
+      <div style="margin-top: 30px;">
+        <table style="border:none;">
+          <tr style="border:none;">
+            <td style="border:none; width: 50%;">
+              <strong>甲方 (招標機關)</strong><br>
+              名稱：中華民國政府授權採購機關<br>
+              代表人：首長印信專區<br>
+              地址：台北市中正區行政大樓
+            </td>
+            <td style="border:none; width: 50%;">
+              <strong>乙方 (得標廠商)</strong><br>
+              名稱：得標廠商企業股份有限公司<br>
+              代表人：負責人與公司大小章專區<br>
+              地址：[得標後確實填寫]
+            </td>
+          </tr>
+        </table>
+      </div>
+    `;
+  } else {
+    contractBody = `
+      <h1>${procureName} - 契約條款書</h1>
+      <p>機關（以下簡稱甲方）與得標廠商（以下簡稱乙方），雙方同意就「${procureName}」之履約管理約定如下條款：</p>
+      
+      <h2>第一條：履約內容與標的</h2>
+      <p>乙方應依本案招標規格書，確實辦理並履行本採購合約。</p>
+      
+      <h2>第二條：契約價金給付上限</h2>
+      <p class="highlight-nat">本案契約上限總金額為新臺幣 <span class="highlight-var">${budgetAmount.toLocaleString('zh-TW')}元整</span>，實際給付價金依開標決標紀錄之金額核算之。</p>
+      
+      <h2>第三條：契約履約期限</h2>
+      <p class="highlight-age">履約工期：乙方應於 <span class="highlight-var">${periodText}</span> 內完成履約義務。</p>
+      
+      <h2>第四條：保險項目約定</h2>
+      <p class="highlight-nat">乙方應於開工日起辦理投保，保險單及繳費收據影本應於14日內送交甲方備查。投保險種為：<span class="highlight-var">${insuranceDetails || '免收保險'}</span>。</p>
+      
+      <h2>第五條：契約價金明細表</h2>
+      <table>
+        <thead>
+          <tr><th>品項/項目名稱</th><th>單位</th><th>數量</th><th>預算單價 (元)</th><th>備註</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>${procureName} 主體履約標的</td><td>式</td><td>1</td><td>${budgetAmount.toLocaleString('zh-TW')}</td><td>核實支付</td></tr>
+          ${expansionAmount > 0 ? `<tr><td>後續擴充項目保留款</td><td>式</td><td>1</td><td>${expansionAmount.toLocaleString('zh-TW')}</td><td>依後拓約定辦理</td></tr>` : ''}
+        </tbody>
+      </table>
+      
+      <h2>第六條：合約立書簽署人</h2>
+      <p>本契約正本二份，甲乙雙方各執一份；副本四份，由雙方分送相關單位存查。</p>
+      <div style="margin-top: 30px;">
+        <table style="border:none;">
+          <tr style="border:none;">
+            <td style="border:none; width: 50%;">
+              <strong>甲方 (招標機關)</strong><br>
+              名稱：中華民國政府授權採購機關<br>
+              代表人：首長印信專區<br>
+              地址：台北市中正區行政大樓
+            </td>
+            <td style="border:none; width: 50%;">
+              <strong>乙方 (得標廠商)</strong><br>
+              名稱：得標廠商企業股份有限公司<br>
+              代表人：負責人與公司大小章專區<br>
+              地址：[得標後確實填寫]
+            </td>
+          </tr>
+        </table>
+      </div>
+    `;
+  }
 
   downloadDocFile(`${procureName}_投標須知.doc`, buildHtmlDoc("投標須知", tenderingBody));
   setTimeout(() => {
