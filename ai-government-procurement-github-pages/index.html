@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>採購智作｜政府採購文件協作平台</title>
+  <style>
+    :root{--ink:#18342e;--muted:#66736f;--paper:#fffdf8;--bg:#eef2ec;--brand:#0f6b58;--brand2:#d29a32;--line:#d9dfda;--danger:#a34135;--warn:#9a6514;--ok:#276947;--shadow:0 16px 44px rgba(28,57,49,.09)}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif} button,input,select,textarea{font:inherit}
+    .shell{min-height:100vh;display:grid;grid-template-columns:260px 1fr}.side{background:#173c34;color:#fff;padding:30px 24px;position:sticky;top:0;height:100vh}.brand{font-size:24px;font-weight:800;letter-spacing:.08em}.brand small{display:block;color:#afd1c7;font-size:12px;font-weight:500;letter-spacing:.04em;margin-top:7px}.case{margin:30px 0;padding:16px;background:rgba(255,255,255,.08);border-radius:14px}.case b{display:block;margin-bottom:5px}.case span{font-size:12px;color:#c5d9d3}.steps{display:grid;gap:10px}.step{border:0;background:transparent;color:#bdd3cc;text-align:left;padding:13px 14px;border-radius:10px;cursor:pointer}.step.active{background:#fff;color:#173c34;font-weight:700}.step.done:before{content:"✓";color:#e9bb65;margin-right:8px}.privacy{position:absolute;bottom:24px;font-size:11px;color:#a9c0b9;line-height:1.6}
+    main{padding:34px 4vw 70px;max-width:1320px;width:100%}.top{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:24px}.eyebrow{color:var(--brand);font-size:12px;font-weight:800;letter-spacing:.12em}.top h1{margin:7px 0 6px;font-family:Georgia,"Noto Serif TC",serif;font-size:34px}.sub{color:var(--muted)}.status{background:#e2f0ea;color:var(--ok);padding:8px 12px;border-radius:99px;font-size:12px;font-weight:700}
+    .panel{background:var(--paper);border:1px solid #e2e4df;border-radius:20px;padding:26px;box-shadow:var(--shadow);margin-bottom:18px}.panel h2{font-size:20px;margin:0 0 8px}.lead{color:var(--muted);margin:0 0 22px;line-height:1.7}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.field{display:grid;gap:7px}.field.full{grid-column:1/-1}.field label{font-size:13px;font-weight:700}.field em{font-style:normal;color:var(--danger)}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:12px 13px;background:#fff;color:var(--ink);outline:none}input:focus,select:focus,textarea:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(15,107,88,.1)}textarea{min-height:104px;resize:vertical}.hint{font-size:11px;color:var(--muted)}
+    .upload{border:1px dashed #9eaaa6;border-radius:13px;padding:18px;background:#f7f8f4}.upload input{border:0;padding:8px 0;background:transparent}.source-box{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.source{padding:16px;border:1px solid var(--line);border-radius:13px;background:#fff}.source strong{display:block;font-size:13px}.source span{font-size:11px;color:var(--muted)}
+    .actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}.btn{border:0;border-radius:10px;padding:11px 17px;cursor:pointer;font-weight:700}.primary{background:var(--brand);color:white}.secondary{background:#e4ebe7;color:var(--ink)}.gold{background:var(--brand2);color:#1e2b27}.screen{display:none}.screen.active{display:block}
+    .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.metric{border:1px solid var(--line);border-radius:13px;padding:16px;background:#fff}.metric span{display:block;color:var(--muted);font-size:11px}.metric b{display:block;margin-top:6px;font-size:16px}.notice{padding:14px 16px;border-left:4px solid var(--brand2);background:#fff5df;border-radius:8px;font-size:13px;line-height:1.7;margin:18px 0}.checks{display:grid;gap:10px}.check{display:flex;gap:12px;padding:14px;border:1px solid var(--line);border-radius:12px;background:#fff}.dot{width:10px;height:10px;border-radius:50%;margin-top:5px;flex:0 0 auto}.dot.ok{background:var(--ok)}.dot.warn{background:#d39027}.dot.danger{background:var(--danger)}.check b{font-size:13px}.check p{margin:4px 0 0;font-size:12px;color:var(--muted)}
+    .docs{display:grid;grid-template-columns:220px 1fr;min-height:570px;padding:0;overflow:hidden}.docnav{background:#f2f4ef;padding:20px;border-right:1px solid var(--line)}.docnav button{display:block;width:100%;padding:11px;border:0;border-radius:9px;background:transparent;text-align:left;cursor:pointer;color:var(--muted)}.docnav button.active{background:#fff;color:var(--ink);font-weight:700}.doc{padding:34px 42px}.doc h2{text-align:center;font-family:"Noto Serif TC",serif}.doc h3{font-size:15px;margin-top:25px}.doc p,.doc li{font-family:"Noto Serif TC",serif;line-height:1.9;font-size:14px}.tag{display:inline-block;padding:3px 7px;border-radius:5px;background:#e6f1ed;color:var(--brand);font-family:sans-serif;font-size:10px}.unknown{background:#fff0d1;color:#94600a;border-bottom:1px dashed #bd8428}.footer-note{margin-top:28px;border-top:1px solid var(--line);padding-top:14px;color:var(--muted);font-size:11px}.toast{position:fixed;right:28px;bottom:28px;background:#173c34;color:#fff;padding:13px 17px;border-radius:10px;box-shadow:var(--shadow);display:none}.toast.show{display:block}
+    @media(max-width:800px){.shell{grid-template-columns:1fr}.side{height:auto;position:static}.privacy{display:none}.steps{grid-template-columns:repeat(2,1fr)}main{padding:24px 16px}.grid,.source-box,.summary{grid-template-columns:1fr}.docs{grid-template-columns:1fr}.docnav{border-right:0}.doc{padding:24px}.top{display:block}.status{display:inline-block;margin-top:12px}}
+    @media print{.side,.top,.docnav,.actions,.no-print{display:none!important}.shell{display:block}main{padding:0}.panel{box-shadow:none;border:0}.docs{display:block}.doc{padding:0}}
+  </style>
+</head>
+<body>
+<div class="shell">
+  <aside class="side">
+    <div class="brand">採購智作<small>PUBLIC PROCUREMENT COPILOT</small></div>
+    <div class="case"><b id="sideCase">新採購案件</b><span>草稿・尚未核定</span></div>
+    <nav class="steps">
+      <button class="step active" data-screen="intake">01　需求訪談</button>
+      <button class="step" data-screen="sources">02　參考資料</button>
+      <button class="step" data-screen="confirm">03　規劃確認</button>
+      <button class="step" data-screen="documents">04　文件與檢核</button>
+    </nav>
+    <div class="privacy">本原型僅供流程展示<br>AI 建議須由權責人員確認後使用</div>
+  </aside>
+  <main>
+    <header class="top"><div><div class="eyebrow">AI 採購文件協作平台</div><h1 id="pageTitle">告訴我們，這次要採購什麼？</h1><div class="sub">以一份案件資料，產生並檢查整套採購文件。</div></div><span class="status">● 資料留在本機瀏覽器</span></header>
+
+    <section class="screen active" id="intake">
+      <div class="panel"><h2>案件基本資料</h2><p class="lead">先填寫已知內容；不確定的項目可以保留，系統會列為待確認。</p>
+        <div class="grid">
+          <div class="field full"><label>用白話描述採購需求 <em>*</em></label><textarea id="need">辦理300人的兩日政策論壇，預算150萬元，需要場地、餐飲、攝影、直播及活動執行。</textarea><span class="hint">請包含人數、天數、主要工作與預期成果。</span></div>
+          <div class="field"><label>採購案名稱 <em>*</em></label><input id="caseName" value="年度政策創新論壇委託專業服務案"></div>
+          <div class="field"><label>機關名稱</label><input id="agency" placeholder="例：○○市政府○○局"></div>
+          <div class="field"><label>預算金額（新臺幣） <em>*</em></label><input id="budget" type="number" value="1500000"></div>
+          <div class="field"><label>採購性質</label><select id="type"><option>勞務採購</option><option>財物採購</option><option>工程採購</option></select></div>
+          <div class="field"><label>履約期間</label><input id="period" value="決標次日起至活動結束後30日"></div>
+          <div class="field"><label>履約地點</label><input id="place" value="臺北市（確切場地由機關指定）"></div>
+          <div class="field"><label>預計決標方式</label><select id="award"><option>準用最有利標</option><option>最有利標</option><option>最低標</option><option>尚待採購單位確認</option></select></div>
+          <div class="field"><label>付款方式</label><select id="payment"><option value="">尚待確認</option><option>驗收合格後一次付款</option><option>分期付款</option></select></div>
+        </div><div class="actions"><button class="btn primary" onclick="go('sources')">下一步：加入參考資料</button></div>
+      </div>
+    </section>
+
+    <section class="screen" id="sources">
+      <div class="panel"><h2>參考資料與依據</h2><p class="lead">官方範本優先於機關範本與歷史案件。參考舊案只用來協助理解需求，不會直接視為正確條款。</p>
+        <div class="source-box"><div class="source"><strong>① 現行官方範本</strong><span>最高優先・系統維護版本</span></div><div class="source"><strong>② 機關核定範本</strong><span>次優先・需記錄版本</span></div><div class="source"><strong>③ 歷史相似案件</strong><span>僅供參考・自動標示差異</span></div></div>
+        <div class="grid" style="margin-top:20px"><div class="field"><label>機關內部契約或文件範本</label><div class="upload"><input id="agencyFile" type="file" accept=".doc,.docx,.pdf,.odt"></div></div><div class="field"><label>最接近的歷史採購案</label><div class="upload"><input id="oldFile" type="file" accept=".doc,.docx,.pdf,.odt"></div></div></div>
+        <div class="notice"><b>原型的資料處理原則：</b>本頁目前只記錄檔名，不會將內容上傳。正式系統應在受控環境解析文件，並保留來源、版次與日期。</div>
+        <div class="actions"><button class="btn secondary" onclick="go('intake')">返回</button><button class="btn primary" onclick="prepareSummary()">分析案件並建立規劃摘要</button></div>
+      </div>
+    </section>
+
+    <section class="screen" id="confirm">
+      <div class="panel"><h2>採購規劃摘要</h2><p class="lead">請先確認關鍵條件，再生成文件。黃色項目代表仍需人工決定。</p>
+        <div class="summary"><div class="metric"><span>採購類型</span><b id="sType"></b></div><div class="metric"><span>預算金額</span><b id="sBudget"></b></div><div class="metric"><span>決標方式</span><b id="sAward"></b></div><div class="metric"><span>預計文件</span><b>5 份＋檢核報告</b></div></div>
+        <div class="notice" id="aiSummary"></div>
+        <div class="checks" id="prechecks"></div>
+        <div class="actions"><button class="btn secondary" onclick="go('sources')">返回修正</button><button class="btn gold" onclick="generateDocs()">確認並生成整套文件</button></div>
+      </div>
+    </section>
+
+    <section class="screen" id="documents">
+      <div class="panel no-print"><h2>文件完成度與風險檢核</h2><p class="lead">文件已共用同一份案件資料；請完成待確認事項後，再交由採購或法制人員審核。</p><div class="summary"><div class="metric"><span>已產生文件</span><b>5 份</b></div><div class="metric"><span>一致性檢查</span><b style="color:var(--ok)">8 項通過</b></div><div class="metric"><span>待人工確認</span><b id="warningCount" style="color:var(--warn)">2 項</b></div><div class="metric"><span>文件狀態</span><b>草稿・未核定</b></div></div></div>
+      <div class="panel docs"><nav class="docnav"><button class="active" data-doc="needDoc">需求規格書</button><button data-doc="noticeDoc">投標須知摘要</button><button data-doc="contractDoc">契約草案</button><button data-doc="priceDoc">價格清單</button><button data-doc="reviewDoc">評選項目</button><button data-doc="checkDoc">檢核報告</button></nav><article class="doc" id="docBody"></article></div>
+      <div class="actions no-print"><button class="btn secondary" onclick="go('confirm')">返回摘要</button><button class="btn secondary" onclick="window.print()">列印目前文件</button><button class="btn primary" onclick="downloadPackage()">下載文件包（HTML）</button></div>
+    </section>
+  </main>
+</div><div class="toast" id="toast"></div>
+<script>
+const $=id=>document.getElementById(id); let docs={};
+const titles={intake:'告訴我們，這次要採購什麼？',sources:'加入可追溯的參考資料',confirm:'先確認規劃，再生成文件',documents:'文件已生成，請進行人工核定'};
+function value(id){return $(id).value.trim()} function money(n){return Number(n||0).toLocaleString('zh-TW',{style:'currency',currency:'TWD',maximumFractionDigits:0})}
+function go(id){document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('.step').forEach((x,i)=>{x.classList.toggle('active',x.dataset.screen===id);const order=['intake','sources','confirm','documents'];x.classList.toggle('done',order.indexOf(x.dataset.screen)<order.indexOf(id))});$('pageTitle').textContent=titles[id];scrollTo(0,0)}
+document.querySelectorAll('.step').forEach(b=>b.onclick=()=>go(b.dataset.screen));
+function prepareSummary(){if(!value('need')||!value('caseName')||!value('budget')){toast('請先填寫需求、案名與預算金額');go('intake');return}$('sideCase').textContent=value('caseName');$('sType').textContent=value('type');$('sBudget').textContent=money(value('budget'));$('sAward').textContent=value('award');$('aiSummary').innerHTML='<b>AI案件理解：</b>本案為活動執行類專業服務，核心成果包含論壇企劃、場地與餐飲安排、影像紀錄、直播及結案成果。以下內容是規劃草稿，不構成法規判定。';let checks=[['ok','案件目的與主要成果已識別','已由需求描述整理為五類工作項目。'],['ok','文件將共用單一案件資料','案名、金額、期間與地點會同步套用。'],[value('payment')?'ok':'warn',value('payment')?'付款方式已確認':'付款方式尚待確認',value('payment')||'生成文件時會以「待確認」標示，不會自行猜測。'],[value('agency')?'ok':'warn',value('agency')?'招標機關已填寫':'招標機關尚未填寫',value('agency')||'正式輸出前必須補齊。']];$('prechecks').innerHTML=checks.map(c=>`<div class="check"><span class="dot ${c[0]}"></span><div><b>${c[1]}</b><p>${c[2]}</p></div></div>`).join('');go('confirm')}
+function data(){return{name:value('caseName'),agency:value('agency')||'<span class="unknown">待填：招標機關</span>',need:value('need'),budget:money(value('budget')),type:value('type'),period:value('period')||'<span class="unknown">待確認</span>',place:value('place')||'<span class="unknown">待確認</span>',award:value('award'),payment:value('payment')||'<span class="unknown">待確認付款方式</span>'}}
+function generateDocs(){const d=data(),src='<span class="tag">來源：本案輸入資料</span>';docs.needDoc=`<h2>${d.name}<br>採購需求規格書（草案）</h2><p>${src}</p><h3>一、採購目的</h3><p>${d.need}</p><h3>二、委託工作項目</h3><ol><li>整體活動企劃、時程管理及現場執行。</li><li>提供可容納約300人之活動場地、必要設備及動線規劃。</li><li>辦理與會人員餐飲及現場服務。</li><li>完成全程攝影、錄影與網路直播服務。</li><li>提交成果報告、影像檔案及相關交付成果。</li></ol><h3>三、履約條件</h3><p>履約期間：${d.period}<br>履約地點：${d.place}<br>採購預算：${d.budget}</p><h3>四、驗收方式</h3><p><span class="unknown">待確認：成果項目、數量、格式及驗收標準應由承辦人逐項核定。</span></p>${foot()}`;
+docs.noticeDoc=`<h2>${d.name}<br>投標須知重點摘要（草案）</h2><p>${src}</p><h3>案件資訊</h3><p>招標機關：${d.agency}<br>採購性質：${d.type}<br>預算金額：${d.budget}<br>決標方式：${d.award}</p><h3>投標文件</h3><p>廠商資格、押標金、領標方式、截止投標時間及開標資訊，應依適用之現行官方範本與機關核定內容填列。</p><div class="notice"><b>不得直接發布：</b>本頁僅為重點摘要；正式投標須知仍須套用適用的最新版官方範本並完成逐項勾選。</div>${foot()}`;
+docs.contractDoc=`<h2>${d.name}<br>勞務採購契約條件摘要（草案）</h2><p>${src}</p><h3>契約當事人</h3><p>機關：${d.agency}<br>廠商：得標後填列</p><h3>契約價金與履約</h3><p>採購預算：${d.budget}<br>履約期間：${d.period}<br>履約地點：${d.place}<br>付款方式：${d.payment}</p><h3>權利義務</h3><p>智慧財產權、保密、個人資料保護、遲延履約、契約變更及終止等條款，應依最新版勞務採購契約範本及本案實際需求核定。</p>${foot()}`;
+docs.priceDoc=`<h2>${d.name}<br>投標標價清單（草案）</h2><p>${src}</p><table style="width:100%;border-collapse:collapse"><tr><th style="border:1px solid #aaa;padding:8px">項次</th><th style="border:1px solid #aaa;padding:8px">項目</th><th style="border:1px solid #aaa;padding:8px">單位</th><th style="border:1px solid #aaa;padding:8px">數量</th><th style="border:1px solid #aaa;padding:8px">金額</th></tr>${['整體企劃與專案管理','場地及硬體設備','餐飲服務','攝影錄影及直播','成果報告及交付'].map((x,i)=>`<tr><td style="border:1px solid #aaa;padding:8px">${i+1}</td><td style="border:1px solid #aaa;padding:8px">${x}</td><td style="border:1px solid #aaa;padding:8px">式</td><td style="border:1px solid #aaa;padding:8px">1</td><td style="border:1px solid #aaa;padding:8px">由廠商填列</td></tr>`).join('')}</table><p>採購預算上限：${d.budget}</p>${foot()}`;
+docs.reviewDoc=`<h2>${d.name}<br>評選項目建議（草案）</h2><p><span class="tag">來源：AI建議，須由評選需求核定</span></p><ol><li>服務建議書之完整性與可行性（30分）</li><li>活動執行規劃及品質控管（25分）</li><li>專案團隊組成與相關經驗（20分）</li><li>價格合理性（15分）</li><li>簡報與答詢（10分）</li></ol><div class="notice">配分與門檻不得直接採用，應依個案需求、決標方式及機關程序確認。</div>${foot()}`;
+const warnings=(value('payment')?0:1)+(value('agency')?0:1);$('warningCount').textContent=warnings+' 項';docs.checkDoc=`<h2>${d.name}<br>文件一致性與風險檢核報告</h2><div class="checks"><div class="check"><span class="dot ok"></span><div><b>案名一致</b><p>所有文件均使用「${d.name}」。</p></div></div><div class="check"><span class="dot ok"></span><div><b>預算一致</b><p>所有文件均使用 ${d.budget}。</p></div></div><div class="check"><span class="dot ok"></span><div><b>期間與地點一致</b><p>已由單一案件資料同步。</p></div></div>${!value('agency')?'<div class="check"><span class="dot warn"></span><div><b>招標機關待填</b><p>正式輸出前必須補齊。</p></div></div>':''}${!value('payment')?'<div class="check"><span class="dot warn"></span><div><b>付款方式待確認</b><p>AI未自行推定付款條件。</p></div></div>':''}<div class="check"><span class="dot danger"></span><div><b>須進行法規及範本覆核</b><p>本原型未連接官方範本版本庫，不得直接作為正式招標文件。</p></div></div></div>${foot()}`;$('docBody').innerHTML=docs.needDoc;go('documents')}
+function foot(){return '<div class="footer-note">文件狀態：AI協作草稿・未經權責人員核定｜不得直接作為正式招標文件</div>'}
+document.querySelectorAll('[data-doc]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-doc]').forEach(x=>x.classList.toggle('active',x===b));$('docBody').innerHTML=docs[b.dataset.doc]});
+function downloadPackage(){const html=`<!doctype html><meta charset="utf-8"><title>${value('caseName')}文件包</title><style>body{font-family:"Microsoft JhengHei",sans-serif;max-width:850px;margin:40px auto;line-height:1.8}section{page-break-after:always}table{width:100%;border-collapse:collapse}.unknown{background:#fff0d1}</style>${Object.values(docs).map(x=>'<section>'+x+'</section>').join('')}`;const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));a.download=(value('caseName')||'採購文件包')+'.html';a.click();URL.revokeObjectURL(a.href);toast('文件包已下載')}
+function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2400)}
+</script>
+</body></html>
