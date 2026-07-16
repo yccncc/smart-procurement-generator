@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-07-16",
+  "amounts": {
+    "announcement": 1500000,
+    "smallCentral": 150000,
+    "review": {"工程採購": 50000000, "財物採購": 50000000, "勞務採購": 10000000},
+    "large": {"工程採購": 200000000, "財物採購": 100000000, "勞務採購": 20000000}
+  },
+  "sources": [
+    {"title":"政府採購法之查核金額、公告金額及中央機關小額採購金額","url":"https://lawweb.pcc.gov.tw/LawContent.aspx?id=GL000093"},
+    {"title":"投標廠商資格與特殊或巨額採購認定標準","url":"https://lawweb.pcc.gov.tw/LawContent.aspx?id=FL000722"},
+    {"title":"採購申訴審議委員會組織準則","url":"https://www.pcc.gov.tw/content/cp.aspx?n=D2EFC1754E864E08"},
+    {"title":"工程會採購申訴審議委員會","url":"https://www.pcc.gov.tw/content/index?eid=3123&type=C"}
+  ]
+}
