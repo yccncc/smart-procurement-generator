@@ -1,0 +1,22 @@
+{
+  "source": {
+    "name": "行政院公共工程委員會－招標相關文件及表格",
+    "url": "https://www.pcc.gov.tw/content/list?eid=9807&lang=1",
+    "catalogCheckedAt": "2026-07-16",
+    "note": "本清單使用本網站保存之工程會官方範本；正式招標前仍應回工程會來源頁確認是否更新。"
+  },
+  "templates": [
+    {"id":"tender-notice","kind":"notice","types":["工程採購","財物採購","勞務採購"],"title":"投標須知範本","version":"114.12.31","file":"templates/投標須知範本（1141231）.doc","keywords":[]},
+    {"id":"best-value-notice","kind":"notice","types":["工程採購","財物採購","勞務採購"],"title":"參考最有利標精神投標須知範本","version":"114.12.31","file":"templates/參考最有利標精神投標須知範本（1141231）.docx","keywords":["參考最有利標精神"]},
+    {"id":"service-contract","kind":"contract","types":["勞務採購"],"title":"勞務採購契約範本","version":"114.12.31","file":"templates/勞務採購契約範本（1141231）.doc","keywords":[]},
+    {"id":"property-contract","kind":"contract","types":["財物採購"],"title":"財物採購契約範本","version":"114.12.30","file":"templates/財物採購契約範本（1141230）.docx","keywords":[]},
+    {"id":"it-service-contract","kind":"contract","types":["勞務採購"],"title":"資訊服務採購契約範本","version":"113.12.26","file":"templates/資訊服務採購契約範本（1131226）.doc","keywords":["資訊","系統","軟體","網站","維運","開發","程式"]},
+    {"id":"cloud-service-contract","kind":"contract","types":["勞務採購"],"title":"資訊雲端服務採購契約範本","version":"114.12.30","file":"templates/資訊雲端服務採購契約範本（1141230）.doc","keywords":["雲端","cloud","saas","paas","iaas"]},
+    {"id":"media-service-contract","kind":"contract","types":["勞務採購"],"title":"媒體服務採購契約範本","version":"114.12.30","file":"templates/媒體服務採購契約範本（1141230）.doc","keywords":["媒體","廣告","宣傳","行銷","刊登"]},
+    {"id":"social-service-contract","kind":"contract","types":["勞務採購"],"title":"社會福利服務採購契約範本","version":"114.12.30","file":"templates/社會福利服務採購契約範本（1141230）.docx","keywords":["社會福利","照顧服務","長照","安置","身心障礙"]},
+    {"id":"technical-service-contract","kind":"contract","types":["勞務採購"],"title":"公共工程技術服務契約範本","version":"115.04.23","file":"templates/公共工程技術服務契約範本+（1150423）.docx","keywords":["技術服務","設計監造","規劃設計","工程顧問"]},
+    {"id":"pm-contract","kind":"contract","types":["勞務採購"],"title":"公共工程專案管理契約範本","version":"114.12.30","file":"templates/公共工程專案管理契約範本（1141230）.doc","keywords":["專案管理","PCM"]},
+    {"id":"emergency-contract","kind":"contract","types":["工程採購"],"title":"災害搶險搶修開口契約範本","version":"114.12.30","file":"templates/災害搶險搶修開口契約範本（1141230）.docx","keywords":["搶險","搶修","災害","開口契約"]},
+    {"id":"reconstruction-service-contract","kind":"contract","types":["勞務採購"],"title":"災後復建工程設計、監造技術服務開口契約範本","version":"114.12.30","file":"templates/災後復建工程設計、監造技術服務開口契約範本（1141230）.doc","keywords":["災後復建","復建工程","開口契約"]}
+  ]
+}
