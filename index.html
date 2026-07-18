@@ -29,7 +29,7 @@
       <button class="step" data-screen="confirm">03　規劃確認</button>
       <button class="step" data-screen="documents">04　文件與檢核</button>
     </nav>
-    <div class="privacy">本原型僅供流程展示<br>AI 建議須由權責人員確認後使用<br>版本：2026.07.18-TENDERNOTICE-7</div>
+    <div class="privacy">本原型僅供流程展示<br>AI 建議須由權責人員確認後使用<br>版本：2026.07.19-TENDERMETHOD-8</div>
   </aside>
   <main>
     <header class="top"><div><div class="eyebrow">AI 採購文件協作平台</div><h1 id="pageTitle">告訴我們，這次要採購什麼？</h1><div class="sub">以一份案件資料，產生並檢查整套採購文件。</div></div><span class="status">● 資料留在本機瀏覽器</span></header>
@@ -48,6 +48,7 @@
           <div class="field"><label>履約期間</label><input id="period" value="決標次日起至活動結束後30日"></div>
           <div class="field"><label>履約地點</label><input id="place" value="臺北市（確切場地由機關指定）"></div>
           <div class="field"><label>預計決標方式</label><select id="award"><option>準用最有利標</option><option>最有利標</option><option>最低標</option><option>尚待採購單位確認</option></select></div>
+          <div class="field full"><label>招標方式（投標須知第15點） <em>*</em></label><select id="tenderMethod"><option value="open">公開招標（採購法第19條）</option><option value="selective">選擇性招標（採購法第20條，款次另行確認）</option><option value="restricted-professional">限制性招標－公開評選專業服務（第22條第1項第9款）</option><option value="restricted-technical">限制性招標－公開評選技術服務（第22條第1項第9款）</option><option value="restricted-information">限制性招標－公開評選資訊服務（第22條第1項第9款）</option><option value="restricted-social">限制性招標－公開評選社會福利服務（第22條第1項第9款）</option><option value="restricted-compare">限制性招標－比價（法定事由及款次另行確認）</option><option value="restricted-negotiate">限制性招標－議價（法定事由及款次另行確認）</option><option value="quotation">公開取得書面報價或企劃書（採購法第49條，限未達公告金額）</option><option value="unknown">尚待採購單位確認</option></select><span class="hint" id="tenderMethodHint"></span></div>
           <div class="field"><label>採購申訴審議機關</label><select id="complaintBody"><option value="auto">依招標機關自動判斷</option><option value="central">採購法主管機關（工程會）</option><option value="taipei">臺北市政府</option><option value="newtaipei">新北市政府</option><option value="taoyuan">桃園市政府</option><option value="taichung">臺中市政府</option><option value="tainan">臺南市政府</option><option value="kaohsiung">高雄市政府</option><option value="other">其他／待確認</option></select></div>
           <div class="field"><label>付款方式</label><select id="payment"><option value="">尚待確認</option><option>驗收合格後一次付款</option><option>分期付款</option></select></div>
         </div><div class="actions"><button class="btn primary" onclick="go('sources')">下一步：加入參考資料</button></div>
@@ -94,6 +95,9 @@ document.querySelectorAll('.step').forEach(b=>b.onclick=()=>go(b.dataset.screen)
 function localTierLabel(type,amount){const announcement=1500000,review=type==='勞務採購'?10000000:50000000,large=type==='工程採購'?200000000:type==='財物採購'?100000000:20000000;return amount<=150000?'小額採購':amount<announcement?'未達公告金額':amount<review?'公告金額以上未達查核金額':amount<large?'查核金額以上未達巨額':'巨額採購'}
 function updateProcurementAmount(){const budget=Number(value('budget')||0),expansion=Number(value('expansionAmount')||0),total=budget+expansion;$('procurementAmount').value=total;$('procurementTierHint').textContent=`採購金額 ${money(total)}＝預算 ${money(budget)}＋後續擴充 ${money(expansion)}；目前級距：${localTierLabel(value('type'),total)}。`}
 ['budget','expansionAmount','type'].forEach(id=>$(id).addEventListener('input',updateProcurementAmount));updateProcurementAmount();
+const tenderMethodInfo={open:{label:'公開招標',help:'一般公開程序；通常備妥招標公告、投標須知、需求規格、契約及標價文件。'},selective:{label:'選擇性招標',help:'須符合採購法第20條並確認款次；另需資格審查及邀標文件。'},'restricted-professional':{label:'限制性招標－公開評選專業服務',help:'採購法第22條第1項第9款；應備公開評選公告、評選須知／評選項目、服務建議書格式及議價文件。'},'restricted-technical':{label:'限制性招標－公開評選技術服務',help:'採購法第22條第1項第9款；應備公開評選、評選及議價相關文件。'},'restricted-information':{label:'限制性招標－公開評選資訊服務',help:'採購法第22條第1項第9款；應備公開評選公告、評選須知／項目、資訊服務需求與議價文件。'},'restricted-social':{label:'限制性招標－公開評選社會福利服務',help:'採購法第22條第1項第9款；應備公開評選、評選及議價相關文件。'},'restricted-compare':{label:'限制性招標－比價',help:'須先確認採購法第22條等法定事由、款次、核准及邀請2家以上廠商之文件。'},'restricted-negotiate':{label:'限制性招標－議價',help:'須先確認法定事由、款次、不得比價原因、核准及議價文件。'},quotation:{label:'公開取得書面報價或企劃書',help:'採購法第49條，僅限未達公告金額採購；應備公開取得公告及報價／企劃書文件。'},unknown:{label:'尚待確認',help:'系統不會自動勾選第15點；正式招標前須由採購單位確認。'}};
+function updateTenderMethodHint(){const method=value('tenderMethod'),info=tenderMethodInfo[method],amount=Number(value('procurementAmount')||0);let warning='';if(method==='quotation'&&amount>=1500000)warning=' ⚠ 本案已達公告金額，不適用此方式。';$('tenderMethodHint').textContent=info.help+warning}
+['tenderMethod','budget','expansionAmount'].forEach(id=>$(id).addEventListener('input',updateTenderMethodHint));updateTenderMethodHint();
 function chooseOfficialTemplates(){
   if(!officialCatalog)return [];
   const type=value('type'), text=(value('need')+' '+value('caseName')).toLowerCase();
@@ -146,7 +150,7 @@ function caseProfile(){
   if(/論壇|活動|研討會|會議|餐飲|場地|攝影|直播|聯誼/.test(text))return {id:'event',label:'活動執行專業服務',summary:'本案屬活動執行專業服務，工作重點包括企劃、場地與設備、人員服務、活動執行、影像紀錄及成果交付。',works:['提出整體活動企劃、工作時程、風險管理及人力配置。','依需求辦理場地、設備、動線、識別與現場布置。','辦理報名、接待、餐飲及與會人員服務。','執行攝影、錄影、直播或其他需求所列之影像服務。','完成現場執行、緊急應變及活動後復原。','提交成果報告、影像檔案、簽到或統計資料及其他核定成果。'],deliverables:['活動企劃書與工作時程','場地設備及動線配置成果','報名與現場服務紀錄','攝錄影或直播成果','成果報告及全部交付檔案'],acceptance:['工作項目、數量、規格及完成期限符合核定需求。','活動執行無重大可歸責缺失，異常事件均完成處理及紀錄。','成果檔案格式、解析度、數量及內容符合機關要求。'],prices:['整體企劃與專案管理','場地、布置及硬體設備','報名、接待及餐飲服務','攝影、錄影及直播','現場執行與人力','成果報告及交付'],review:['服務建議書完整性與可行性（25分）','活動執行及品質控管（25分）','場地、設備與安全規劃（15分）','專案團隊與相關經驗（15分）','成果交付及風險應變（10分）','價格合理性（10分）']};
   return {id:'general',label:'一般採購服務',summary:'已依使用者輸入之需求建立一般性工作架構；個案專業規格及驗收量化標準仍須由承辦人確認。',works:['依機關核定需求完成採購標的之規劃、執行與管理。','提出工作計畫、時程、品質管理及風險應變措施。','定期報告執行進度，並配合機關辦理審查及修正。','完成需求所列成果、文件及必要移交。'],deliverables:['工作計畫書','進度及執行紀錄','需求所列成果','結案及移交文件'],acceptance:['成果內容、數量、格式與期限符合核定需求。','缺失於機關通知期限內完成改善。','完成全部文件、資料及權限移交。'],prices:['專案規劃與管理','主要履約工作','品質管理與修正','成果文件及移交'],review:['履約方案完整性與可行性（30分）','品質管理與風險應變（20分）','團隊能力與相關實績（20分）','成果及時程管理（15分）','價格合理性（15分）']};
 }
-function prepareSummary(){if(!value('need')||!value('caseName')||!value('budget')){toast('請先填寫需求、案名與預算金額');go('intake');return}if(!officialCatalog||!selectedOfficial.length){toast('尚未成功取得官方範本，不能進入生成步驟');go('sources');return}const profile=caseProfile();$('sideCase').textContent=value('caseName');$('sType').textContent=value('type');$('sBudget').textContent=money(value('budget'));$('sAward').textContent=value('award');$('aiSummary').innerHTML='<b>案件理解（'+escapeHtml(profile.label)+'）：</b>'+escapeHtml(profile.summary);const officialNames=selectedOfficial.map(t=>t.title+'（'+t.version+'版）').join('、');let checks=[['ok','已選取工程會官方範本',officialNames],['ok','已重新解析本案需求','文件將依「'+profile.label+'」產生，不沿用前一案件文字。'],['ok','文件將共用單一案件資料','案名、需求、工作項目、金額、期間與地點同步套用。'],[value('payment')?'ok':'warn',value('payment')?'付款方式已確認':'付款方式尚待確認',value('payment')||'生成文件時會以「待確認」標示。'],[value('agency')?'ok':'warn',value('agency')?'招標機關已填寫':'招標機關尚未填寫',value('agency')||'正式輸出前必須補齊。']];$('prechecks').innerHTML=checks.map(c=>`<div class="check"><span class="dot ${c[0]}"></span><div><b>${c[1]}</b><p>${c[2]}</p></div></div>`).join('');go('confirm')}
+function prepareSummary(){if(!value('need')||!value('caseName')||!value('budget')){toast('請先填寫需求、案名與預算金額');go('intake');return}if(value('tenderMethod')==='quotation'&&Number(value('procurementAmount'))>=1500000){toast('採購金額已達公告金額，不得選擇公開取得書面報價或企劃書');go('intake');return}if(!officialCatalog||!selectedOfficial.length){toast('尚未成功取得官方範本，不能進入生成步驟');go('sources');return}const profile=caseProfile();$('sideCase').textContent=value('caseName');$('sType').textContent=value('type');$('sBudget').textContent=money(value('budget'));$('sAward').textContent=value('award');$('aiSummary').innerHTML='<b>案件理解（'+escapeHtml(profile.label)+'）：</b>'+escapeHtml(profile.summary);const officialNames=selectedOfficial.map(t=>t.title+'（'+t.version+'版）').join('、');let method=tenderMethodInfo[value('tenderMethod')],checks=[['ok','已選取工程會官方範本',officialNames],[value('tenderMethod')==='unknown'?'warn':'ok',value('tenderMethod')==='unknown'?'招標方式尚待確認':'招標方式已選擇',method.label+'；'+method.help],['ok','已重新解析本案需求','文件將依「'+profile.label+'」產生，不沿用前一案件文字。'],['ok','文件將共用單一案件資料','案名、需求、工作項目、金額、期間與地點同步套用。'],[value('payment')?'ok':'warn',value('payment')?'付款方式已確認':'付款方式尚待確認',value('payment')||'生成文件時會以「待確認」標示。'],[value('agency')?'ok':'warn',value('agency')?'招標機關已填寫':'招標機關尚未填寫',value('agency')||'正式輸出前必須補齊。']];$('prechecks').innerHTML=checks.map(c=>`<div class="check"><span class="dot ${c[0]}"></span><div><b>${c[1]}</b><p>${c[2]}</p></div></div>`).join('');go('confirm')}
 function data(){return{name:escapeHtml(value('caseName')),agency:value('agency')?escapeHtml(value('agency')):'<span class="unknown">待填：招標機關</span>',need:escapeHtml(value('need')).replace(/\n/g,'<br>'),budget:money(value('budget')),type:escapeHtml(value('type')),period:value('period')?escapeHtml(value('period')):'<span class="unknown">待確認</span>',place:value('place')?escapeHtml(value('place')):'<span class="unknown">待確認</span>',award:escapeHtml(value('award')),payment:value('payment')?escapeHtml(value('payment')):'<span class="unknown">待確認付款方式</span>'}}
 function htmlList(items){return '<ol>'+items.map(x=>'<li>'+escapeHtml(x)+'</li>').join('')+'</ol>'}
 async function loadFullTenderNotice(d,src){
@@ -177,9 +181,26 @@ async function loadFullTenderNotice(d,src){
   if(complaintLabel)text=text.replace(new RegExp('(^[ \\t]*)☐('+complaintLabel.replace(/[.*+?^${}()|[\\]\\]/g,'\\$&')+')','m'),(m,a,b)=>a+'☑'+b);
   text=text.replace(/(^[ \t]*)☐(\(1\)未分批辦理。)/m,(m,a,b)=>a+'☑'+b)
     .replace(/(^[ \t]*)☑(\(2\)係分批辦理公告金額以上之採購[^\n]*)/m,(m,a,b)=>a+'☐'+b);
+  const tenderMethod=value('tenderMethod'),methodInfo=tenderMethodInfo[tenderMethod]||tenderMethodInfo.unknown;
+  text=text.replace(/(^[ \t]*十五、\s*招標方式為：[\s\S]*?)(?=^[ \t]*十六、\s*本採購：)/m,block=>{
+    const check=(pattern)=>{block=block.replace(pattern,(m,a,b)=>a+'☑'+b)};
+    if(tenderMethod==='open')check(/(^[ \t]*)☐(\(1\)公開招標)/m);
+    if(tenderMethod==='selective')check(/(^[ \t]*)☐(\(2\)選擇性招標)/m);
+    if(tenderMethod.startsWith('restricted-'))check(/(^[ \t]*)☐(\(3\)限制性招標)/m);
+    if(tenderMethod.startsWith('restricted-')&&!['restricted-compare','restricted-negotiate'].includes(tenderMethod)){
+      check(/(^[ \t]*)☐(（3-1）公開評選、公開勘選優勝廠商)/m);
+      check(/(^[ \t]*)☐(（3-1-1）依採購法第22條第1項第9款辦理)/m);
+      const serviceText={'restricted-professional':'委託專業服務','restricted-technical':'委託技術服務','restricted-information':'委託資訊服務','restricted-social':'委託社會福利服務'}[tenderMethod];
+      if(serviceText)block=block.replace('☐'+serviceText,'☑'+serviceText);
+    }
+    if(tenderMethod==='restricted-compare')check(/(^[ \t]*)☐(（3-2）比價)/m);
+    if(tenderMethod==='restricted-negotiate')check(/(^[ \t]*)☐(（3-3）議價)/m);
+    if(tenderMethod==='quotation')check(/(^[ \t]*)☐(\(4\)依採購法第49條規定公開取得書面報價或企劃書)/m);
+    return block;
+  });
   const tierLabel=['','公告金額十分之一以下','逾公告金額十分之一未達公告金額','公告金額以上未達查核金額','查核金額以上未達巨額','巨額'][tier];
   const sourceLinks=rules.sources.map(x=>`<a href="${x.url}" target="_blank" rel="noopener">${escapeHtml(x.title)}</a>`).join('、');
-  return `<h2>${d.name}<br>投標須知</h2><p>${src}</p><div class="notice"><b>本案自動判斷：</b>採購性質「${d.type}」、採購金額 ${money(amount)}，屬「${tierLabel}」；${joint==='no'?'非共同供應契約':joint==='yes'?'共同供應契約':'共同供應契約狀態待確認'}；申訴審議機關為「${escapeHtml(complaintLabel||'待確認')}」。系統僅勾選現有資料可確定之項目，其餘維持未勾選。</div><div class="source-meta">判斷規則檢查日：${escapeHtml(rules.checkedAt)}｜官方來源：${sourceLinks}</div><h3>工程會投標須知範本全文（114.12.31版）</h3><div class="official-fulltext">${escapeHtml(text)}</div>${foot()}`;
+  return `<h2>${d.name}<br>投標須知</h2><p>${src}</p><div class="notice"><b>本案自動判斷：</b>採購性質「${d.type}」、採購金額 ${money(amount)}，屬「${tierLabel}」；招標方式「${escapeHtml(methodInfo.label)}」；${joint==='no'?'非共同供應契約':joint==='yes'?'共同供應契約':'共同供應契約狀態待確認'}；申訴審議機關為「${escapeHtml(complaintLabel||'待確認')}」。系統僅勾選現有資料可確定之項目，其餘維持未勾選。</div><div class="source-meta">判斷規則檢查日：${escapeHtml(rules.checkedAt)}｜官方來源：${sourceLinks}</div><h3>工程會投標須知範本全文（114.12.31版）</h3><div class="official-fulltext">${escapeHtml(text)}</div>${foot()}`;
 }
 async function generateDocs(){
   const d=data(),p=caseProfile(),contractTemplate=selectedOfficial.find(t=>t.kind==='contract'),officialSource=selectedOfficial.map(t=>`${t.title} ${t.version}版`).join('、'),src=`<span class="tag">官方母版：${escapeHtml(officialSource)}</span>`;
