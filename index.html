@@ -29,7 +29,7 @@
       <button class="step" data-screen="confirm">03　規劃確認</button>
       <button class="step" data-screen="documents">04　文件與檢核</button>
     </nav>
-    <div class="privacy">本原型僅供流程展示<br>AI 建議須由權責人員確認後使用<br>版本：2026.07.18-TENDERAMOUNT-6</div>
+    <div class="privacy">本原型僅供流程展示<br>AI 建議須由權責人員確認後使用<br>版本：2026.07.18-TENDERNOTICE-7</div>
   </aside>
   <main>
     <header class="top"><div><div class="eyebrow">AI 採購文件協作平台</div><h1 id="pageTitle">告訴我們，這次要採購什麼？</h1><div class="sub">以一份案件資料，產生並檢查整套採購文件。</div></div><span class="status">● 資料留在本機瀏覽器</span></header>
@@ -175,6 +175,8 @@ async function loadFullTenderNotice(d,src){
   if(complaint==='auto'){const a=rawAgency.replace(/台/g,'臺');complaint=a.includes('臺北市')?'taipei':a.includes('新北市')?'newtaipei':a.includes('桃園市')?'taoyuan':a.includes('臺中市')?'taichung':a.includes('臺南市')?'tainan':a.includes('高雄市')?'kaohsiung':'central'}
   const complaintLabels={central:'採購法主管機關設立之採購申訴審議委員會',taipei:'臺北市政府採購申訴審議委員會',newtaipei:'新北市政府採購申訴審議委員會',taoyuan:'桃園市政府採購申訴審議委員會',taichung:'臺中市政府採購申訴審議委員會',tainan:'臺南市政府採購申訴審議委員會',kaohsiung:'高雄市政府採購申訴審議委員會'},complaintLabel=complaintLabels[complaint];
   if(complaintLabel)text=text.replace(new RegExp('(^[ \\t]*)☐('+complaintLabel.replace(/[.*+?^${}()|[\\]\\]/g,'\\$&')+')','m'),(m,a,b)=>a+'☑'+b);
+  text=text.replace(/(^[ \t]*)☐(\(1\)未分批辦理。)/m,(m,a,b)=>a+'☑'+b)
+    .replace(/(^[ \t]*)☑(\(2\)係分批辦理公告金額以上之採購[^\n]*)/m,(m,a,b)=>a+'☐'+b);
   const tierLabel=['','公告金額十分之一以下','逾公告金額十分之一未達公告金額','公告金額以上未達查核金額','查核金額以上未達巨額','巨額'][tier];
   const sourceLinks=rules.sources.map(x=>`<a href="${x.url}" target="_blank" rel="noopener">${escapeHtml(x.title)}</a>`).join('、');
   return `<h2>${d.name}<br>投標須知</h2><p>${src}</p><div class="notice"><b>本案自動判斷：</b>採購性質「${d.type}」、採購金額 ${money(amount)}，屬「${tierLabel}」；${joint==='no'?'非共同供應契約':joint==='yes'?'共同供應契約':'共同供應契約狀態待確認'}；申訴審議機關為「${escapeHtml(complaintLabel||'待確認')}」。系統僅勾選現有資料可確定之項目，其餘維持未勾選。</div><div class="source-meta">判斷規則檢查日：${escapeHtml(rules.checkedAt)}｜官方來源：${sourceLinks}</div><h3>工程會投標須知範本全文（114.12.31版）</h3><div class="official-fulltext">${escapeHtml(text)}</div>${foot()}`;
