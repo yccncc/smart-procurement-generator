@@ -29,7 +29,7 @@
       <button class="step" data-screen="confirm">03　規劃確認</button>
       <button class="step" data-screen="documents">04　文件與檢核</button>
     </nav>
-    <div class="privacy">本原型僅供流程展示<br>AI 建議須由權責人員確認後使用<br>版本：2026.07.20-RULES-14</div>
+    <div class="privacy">本原型僅供流程展示<br>AI 建議須由權責人員確認後使用<br>版本：2026.07.20-RULES-15</div>
   </aside>
   <main>
     <header class="top"><div><div class="eyebrow">AI 採購文件協作平台</div><h1 id="pageTitle">告訴我們，這次要採購什麼？</h1><div class="sub">以一份案件資料，產生並檢查整套採購文件。</div></div><span class="status">● 資料留在本機瀏覽器</span></header>
@@ -199,8 +199,9 @@ async function loadFullTenderNotice(d,src){
     .replace(/(^[ \t]*)☐(\(2\)非共同供應契約。)/m,(m,a,b)=>a+(joint==='no'?'☑':'☐')+b);
   let complaint='auto';
   if(complaint==='auto'){const a=rawAgency.replace(/台/g,'臺');complaint=a.includes('臺北市')?'taipei':a.includes('新北市')?'newtaipei':a.includes('桃園市')?'taoyuan':a.includes('臺中市')?'taichung':a.includes('臺南市')?'tainan':a.includes('高雄市')?'kaohsiung':'central'}
-  const complaintLabels={central:'採購法主管機關設立之採購申訴審議委員會',taipei:'臺北市政府採購申訴審議委員會',newtaipei:'新北市政府採購申訴審議委員會',taoyuan:'桃園市政府採購申訴審議委員會',taichung:'臺中市政府採購申訴審議委員會',tainan:'臺南市政府採購申訴審議委員會',kaohsiung:'高雄市政府採購申訴審議委員會'},complaintLabel=complaintLabels[complaint];
-  if(complaintLabel)text=text.replace(new RegExp('(^[ \\t]*)☐('+complaintLabel.replace(/[.*+?^${}()|[\\]\\]/g,'\\$&')+')','m'),(m,a,b)=>a+'☑'+b);
+  const complaintLabels={central:'行政院公共工程委員會採購申訴審議委員會',taipei:'臺北市政府採購申訴審議委員會',newtaipei:'新北市政府採購申訴審議委員會',taoyuan:'桃園市政府採購申訴審議委員會',taichung:'臺中市政府採購申訴審議委員會',tainan:'臺南市政府採購申訴審議委員會',kaohsiung:'高雄市政府採購申訴審議委員會'},complaintLabel=complaintLabels[complaint];
+  if(complaint==='central')text=text.replace(/(^[ \t]*)☐採購法主管機關設立之採購申訴審議委員會/m,(m,a)=>a+'☑行政院公共工程委員會採購申訴審議委員會');
+  else if(complaintLabel)text=text.replace(new RegExp('(^[ \\t]*)☐('+complaintLabel.replace(/[.*+?^${}()|[\\]\\]/g,'\\$&')+')','m'),(m,a,b)=>a+'☑'+b);
   text=text.replace(/(^[ \t]*)☐(\(1\)未分批辦理。)/m,(m,a,b)=>a+'☑'+b)
     .replace(/(^[ \t]*)☑(\(2\)係分批辦理公告金額以上之採購[^\n]*)/m,(m,a,b)=>a+'☐'+b);
   const tenderMethod=value('tenderMethod'),methodInfo=tenderMethodInfo[tenderMethod]||tenderMethodInfo.unknown;
@@ -253,6 +254,8 @@ async function loadFullTenderNotice(d,src){
     }else if(jointTender==='no')block=block.replace(/(^[ \t]*)☐(\(2\)不允許廠商共同投標。)/m,(m,a,b)=>a+'☑'+b);
     return block;
   });
+  if(value('sensitiveIT')==='yes')text=text.replace(/(^[ \t]*)☐(本採購屬經濟部\(投資審議司\)公告「具敏感性或國安\(含資安\)疑慮之業務範疇」之資訊服務採購[^\n]*)/m,(m,a,b)=>a+'☑'+b);
+  if(value('nationalSecurity')==='yes')text=text.replace(/(^[ \t]*)☐(本採購內容涉及國家安全，不允許大陸地區廠商、第三地區含陸資成分廠商及在臺陸資廠商參與。[^\n]*)/m,(m,a,b)=>a+'☑'+b);
   const basePrice=value('basePrice'),baseReason=value('noBasePriceReason');
   text=text.replace(/(^[ \t]*五十七、\s*本採購：[\s\S]*?)(?=^[ \t]*五十八、\s*決標原則：)/m,block=>{
     const check=(pattern)=>{block=block.replace(pattern,(m,a,b)=>a+'☑'+b)};
@@ -295,6 +298,8 @@ async function loadFullTenderNotice(d,src){
     .replace(/(^[ \t]*)☐(\(1\)無例外情形。)/m,(m,a,b)=>a+'☑'+b)
     .replace(/(^[ \t]*)☐(\(1\)新臺幣。)/m,(m,a,b)=>a+'☑'+b)
     .replace(/(^[ \t]*)☐(以書面文件簽約。)/m,(m,a,b)=>a+'☑'+b);
+  const noBidBond=value('bidBond')==='no'||(value('bidBond')==='auto'&&rawType==='勞務採購');
+  if(noBidBond&&rawType==='勞務採購')text=text.replace(/(^[ \t]*三十八、\s*無押標金之理由為：[\s\S]*?)(?=^[ \t]*三十九、)/m,block=>block.replace(/(^[ \t]*)☐(\(1\)勞務採購。)/m,(m,a,b)=>a+'☑'+b));
   const noPerformanceBond=value('performanceBond')==='no'||(value('performanceBond')==='auto'&&rawType==='勞務採購');
   if(noPerformanceBond&&rawType==='勞務採購')text=text.replace(/(^[ \t]*四十四、\s*無履約保證金之理由為：[\s\S]*?)(?=^[ \t]*四十五、)/m,block=>block.replace(/(^[ \t]*)☐(\(1\)勞務採購。)/m,(m,a,b)=>a+'☑'+b));
   if(value('budgetPublishedReview')==='yes')text=text.replace(/(^[ \t]*)☐(\(1\)高於公告之預算者。)/m,(m,a,b)=>a+'☑'+b);
