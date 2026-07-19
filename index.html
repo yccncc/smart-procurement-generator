@@ -29,7 +29,7 @@
       <button class="step" data-screen="confirm">03　規劃確認</button>
       <button class="step" data-screen="documents">04　文件與檢核</button>
     </nav>
-    <div class="privacy">本原型僅供流程展示<br>AI 建議須由權責人員確認後使用<br>版本：2026.07.19-INTAKE-9</div>
+    <div class="privacy">本原型僅供流程展示<br>AI 建議須由權責人員確認後使用<br>版本：2026.07.19-AWARD-10</div>
   </aside>
   <main>
     <header class="top"><div><div class="eyebrow">AI 採購文件協作平台</div><h1 id="pageTitle">告訴我們，這次要採購什麼？</h1><div class="sub">以一份案件資料，產生並檢查整套採購文件。</div></div><span class="status">● 資料留在本機瀏覽器</span></header>
@@ -164,7 +164,7 @@ async function loadFullTenderNotice(d,src){
   const rules=await rulesResponse.json();
   let text=(await response.text()).replace(/^\uFEFF/,'');
   const rawName=value('caseName'),rawAgency=value('agency')||'待填：招標機關',rawType=value('type'),rawBudget=money(value('budget')),amount=Number(value('procurementAmount')||value('budget')||0),rawAmount=money(amount);
-  text=text.replace(/[■☒]/g,'☐');
+  text=text.replace(/[■☒□]/g,'☐');
   text=text.replace(/二、\s*本標案名稱：[^\n]*/,'二、 本標案名稱：'+rawName)
     .replace(/六、\s*本採購預算金額([^\n]*：)[^\n]*/,'六、 本採購預算金額$1'+rawBudget)
     .replace(/七、\s*本採購預計金額([^\n]*：)[^\n]*/,'七、 本採購預計金額$1'+rawAmount);
@@ -202,9 +202,38 @@ async function loadFullTenderNotice(d,src){
     if(tenderMethod==='quotation')check(/(^[ \t]*)☐(\(4\)依採購法第49條規定公開取得書面報價或企劃書)/m);
     return block;
   });
+  const basePrice=value('basePrice'),baseReason=value('noBasePriceReason');
+  text=text.replace(/(^[ \t]*五十七、\s*本採購：[\s\S]*?)(?=^[ \t]*五十八、\s*決標原則：)/m,block=>{
+    const check=(pattern)=>{block=block.replace(pattern,(m,a,b)=>a+'☑'+b)};
+    if(basePrice==='private')check(/(^[ \t]*)☐(\(1\)訂底價，但不公告底價。)/m);
+    if(basePrice==='public')check(/(^[ \t]*)☐(\(2\)訂底價，並公告底價。)/m);
+    if(basePrice==='none'){
+      check(/(^[ \t]*)☐(\(3\)不訂底價，理由為：)/m);
+      const reasonText={complex:'訂定底價確有困難之特殊或複雜案件','most-advantageous':'以最有利標決標之採購',professional:'專業服務、技術服務、資訊服務、社會福利服務或文化創意服務者，以不訂底價之最有利標',small:'小額採購'}[baseReason];
+      if(reasonText)block=block.replace('☐'+reasonText,'☑'+reasonText);
+    }
+    return block;
+  });
+  const award=value('award'),awardLabel=selectedText('award');
+  text=text.replace(/(^[ \t]*五十八、\s*決標原則：[\s\S]*?)(?=^[ \t]*五十九、\s*本採購採：)/m,block=>{
+    const check=(pattern)=>{block=block.replace(pattern,(m,a,b)=>a+'☑'+b)};
+    if(['lowest','scored-lowest'].includes(award))check(/(^[ \t]*)☐(\(1\)最低標：)/m);
+    if(award==='lowest')check(/(^[ \t]*)☐(（1-1）非依採購法施行細則第64條之2辦理。)/m);
+    if(award==='scored-lowest')check(/(^[ \t]*)☐(（1-2）依採購法施行細則第64條之2採評分及格最低標)/m);
+    if(['most-advantageous','quasi-most-advantageous','reference-most-advantageous'].includes(award))check(/(^[ \t]*)☐(\(2\)最有利標)/m);
+    if(award==='most-advantageous')check(/(^[ \t]*)☐(（2-1）依採購法第56條適用最有利標)/m);
+    if(award==='quasi-most-advantageous')check(/(^[ \t]*)☐(（2-2）依採購法第22條第1項)/m);
+    if(award==='reference-most-advantageous')check(/(^[ \t]*)☐(（2-3）未達公告金額之採購參考最有利標精神)/m);
+    if(award==='highest')check(/(^[ \t]*)☐(\(3\)最高標。)/m);
+    return block;
+  });
+  const awardWarnings=[];
+  if(award==='reference-most-advantageous'&&amount>=announcement)awardWarnings.push('參考最有利標精神僅適用未達公告金額案件');
+  if(award==='quasi-most-advantageous'&&tenderMethod!=='restricted')awardWarnings.push('準用最有利標通常應與採購法第22條限制性招標及法定款次一併確認');
+  if(basePrice==='none'&&baseReason==='small'&&amount>announcement/10)awardWarnings.push('本案金額不屬公告金額十分之一以下的小額採購，不得以小額採購作為不訂底價理由');
   const tierLabel=['','公告金額十分之一以下','逾公告金額十分之一未達公告金額','公告金額以上未達查核金額','查核金額以上未達巨額','巨額'][tier];
   const sourceLinks=rules.sources.map(x=>`<a href="${x.url}" target="_blank" rel="noopener">${escapeHtml(x.title)}</a>`).join('、');
-  return `<h2>${d.name}<br>投標須知</h2><p>${src}</p><div class="notice"><b>本案自動判斷：</b>採購性質「${d.type}」、採購金額 ${money(amount)}，屬「${tierLabel}」；招標方式「${escapeHtml(methodInfo.label)}」；${joint==='no'?'非共同供應契約':joint==='yes'?'共同供應契約':'共同供應契約狀態待確認'}；申訴審議機關為「${escapeHtml(complaintLabel||'待確認')}」。系統僅勾選現有資料可確定之項目，其餘維持未勾選。</div><div class="source-meta">判斷規則檢查日：${escapeHtml(rules.checkedAt)}｜官方來源：${sourceLinks}</div><h3>工程會投標須知範本全文（114.12.31版）</h3><div class="official-fulltext">${escapeHtml(text)}</div>${foot()}`;
+  return `<h2>${d.name}<br>投標須知</h2><p>${src}</p><div class="notice"><b>本案自動判斷：</b>採購性質「${d.type}」、採購金額 ${money(amount)}，屬「${tierLabel}」；招標方式「${escapeHtml(methodInfo.label)}」；決標原則「${escapeHtml(awardLabel)}」；底價設定「${escapeHtml(selectedText('basePrice'))}」；${joint==='no'?'非共同供應契約':joint==='yes'?'共同供應契約':'共同供應契約狀態待確認'}；申訴審議機關為「${escapeHtml(complaintLabel||'待確認')}」。系統僅勾選現有資料可確定之項目，其餘維持未勾選。${awardWarnings.length?'<br><b>須確認：</b>'+awardWarnings.map(escapeHtml).join('；')+'。':''}</div><div class="source-meta">判斷規則檢查日：${escapeHtml(rules.checkedAt)}｜官方來源：${sourceLinks}</div><h3>工程會投標須知範本全文（114.12.31版）</h3><div class="official-fulltext">${escapeHtml(text)}</div>${foot()}`;
 }
 async function generateDocs(){
   const d=data(),p=caseProfile(),contractTemplate=selectedOfficial.find(t=>t.kind==='contract'),officialSource=selectedOfficial.map(t=>`${t.title} ${t.version}版`).join('、'),src=`<span class="tag">官方母版：${escapeHtml(officialSource)}</span>`;
