@@ -29,7 +29,7 @@
       <button class="step" data-screen="confirm">03　規劃確認</button>
       <button class="step" data-screen="documents">04　文件與檢核</button>
     </nav>
-    <div class="privacy">本原型僅供流程展示<br>AI 建議須由權責人員確認後使用<br>版本：2026.07.20-INTAKEGROUPS-13</div>
+    <div class="privacy">本原型僅供流程展示<br>AI 建議須由權責人員確認後使用<br>版本：2026.07.20-RULES-14</div>
   </aside>
   <main>
     <header class="top"><div><div class="eyebrow">AI 採購文件協作平台</div><h1 id="pageTitle">告訴我們，這次要採購什麼？</h1><div class="sub">以一份案件資料，產生並檢查整套採購文件。</div></div><span class="status">● 資料留在本機瀏覽器</span></header>
@@ -53,6 +53,7 @@
             <div class="field" id="tenderBasisField" style="display:none"><label>法規依據</label><select id="tenderBasis"></select><span class="hint">請依採購簽呈核准款次選擇；不確定時保留待確認。</span></div>
             <div class="field" id="restrictedProcedureField" style="display:none"><label>限制性招標辦理方式</label><select id="restrictedProcedure"><option value="public-evaluation">公開評選／公開勘選優勝廠商</option><option value="compare">比價</option><option value="negotiate">議價</option><option value="public-solicitation">公告程序徵求受邀廠商</option><option value="unknown">尚待採購人員確認</option></select></div>
             <div class="field"><label>決標原則（投標須知第58點） <em>*</em></label><select id="award"><option value="lowest">最低標</option><option value="scored-lowest">評分及格最低標</option><option value="most-advantageous">適用最有利標</option><option value="quasi-most-advantageous">準用最有利標</option><option value="reference-most-advantageous">參考最有利標精神</option><option value="highest">最高標</option><option value="unknown">尚待採購單位確認</option></select></div>
+            <div class="field"><label>是否允許共同投標（投標須知第18點）</label><select id="jointTender"><option value="no">不允許共同投標</option><option value="yes-2">允許，廠商家數上限2家</option><option value="yes-3">允許，廠商家數上限3家</option><option value="yes-4">允許，廠商家數上限4家</option><option value="yes-5">允許，廠商家數上限5家</option><option value="unknown">尚待採購人員確認</option></select></div>
           </div></div>
           <div class="question-group"><div class="question-group-title">底價與保證金</div><p class="question-group-lead">選擇不訂底價時才會顯示理由；保證金可先採系統建議。</p><div class="grid">
             <div class="field"><label>是否訂定底價（投標須知第57點）</label><select id="basePrice"><option value="private">訂底價，但不公告</option><option value="public">訂底價，並公告</option><option value="none">不訂底價</option><option value="unknown">尚待確認</option></select></div>
@@ -233,6 +234,25 @@ async function loadFullTenderNotice(d,src){
     }
     return block;
   });
+  const treaties=[['gpa','世界貿易組織政府採購協定（GPA）。'],['anztec','臺紐經濟合作協定。'],['astEP','臺星經濟夥伴協定。']],selectedTreaties=treaties.filter(x=>$(x[0]).checked);
+  text=text.replace(/(^[ \t]*十六、\s*本採購：[\s\S]*?)(?=^[ \t]*十七、\s*本採購：)/m,block=>{
+    if(selectedTreaties.length){
+      block=block.replace(/(^[ \t]*)☐(\(1\)適用我國締結之條約或協定；其名稱為：)/m,(m,a,b)=>a+'☑'+b);
+      selectedTreaties.forEach(x=>{block=block.replace('☐'+x[1],'☑'+x[1])});
+    }else{
+      block=block.replace(/(^[ \t]*)☐(\(2\)不適用我國締結之條約或協定，外國廠商：)/m,(m,a,b)=>a+'☑'+b)
+        .replace(/(^[ \t]*)☐(不可參與投標。我國廠商所供應標的（含工程、財物及勞務）之原產地須屬我國者。)/m,(m,a,b)=>a+'☑'+b);
+    }
+    return block;
+  });
+  const jointTender=value('jointTender');
+  text=text.replace(/(^[ \t]*十八、\s*本採購：[\s\S]*?)(?=^[ \t]*十九、\s*廠商投標文件遞送方式：)/m,block=>{
+    if(jointTender.startsWith('yes-')){
+      block=block.replace(/(^[ \t]*)☐(\(1\)依採購法第25條規定允許廠商共同投標)/m,(m,a,b)=>a+'☑'+b);
+      const limit=jointTender.split('-')[1];block=block.replace('☐'+limit+'家','☑'+limit+'家');
+    }else if(jointTender==='no')block=block.replace(/(^[ \t]*)☐(\(2\)不允許廠商共同投標。)/m,(m,a,b)=>a+'☑'+b);
+    return block;
+  });
   const basePrice=value('basePrice'),baseReason=value('noBasePriceReason');
   text=text.replace(/(^[ \t]*五十七、\s*本採購：[\s\S]*?)(?=^[ \t]*五十八、\s*決標原則：)/m,block=>{
     const check=(pattern)=>{block=block.replace(pattern,(m,a,b)=>a+'☑'+b)};
@@ -253,21 +273,30 @@ async function loadFullTenderNotice(d,src){
     if(award==='scored-lowest')check(/(^[ \t]*)☐(（1-2）依採購法施行細則第64條之2採評分及格最低標)/m);
     if(['most-advantageous','quasi-most-advantageous','reference-most-advantageous'].includes(award))check(/(^[ \t]*)☐(\(2\)最有利標)/m);
     if(award==='most-advantageous')check(/(^[ \t]*)☐(（2-1）依採購法第56條適用最有利標)/m);
-    if(award==='quasi-most-advantageous')check(/(^[ \t]*)☐(（2-2）依採購法第22條第1項)/m);
+    if(award==='quasi-most-advantageous'){
+      check(/(^[ \t]*)☐(（2-2）依採購法第22條第1項)/m);
+      const clause=value('tenderBasis').match(/^22-(9|10|11|14)/)?.[1];
+      if(clause)block=block.replace('☐第'+clause+'款','☑第'+clause+'款');
+    }
     if(award==='reference-most-advantageous')check(/(^[ \t]*)☐(（2-3）未達公告金額之採購參考最有利標精神)/m);
     if(award==='highest')check(/(^[ \t]*)☐(\(3\)最高標。)/m);
     return block;
   });
-  text=text.replace(/(^[ \t]*)☐(（1）以書面方式投標。)/m,(m,a,b)=>a+'☑'+b)
+  text=text.replace(/(^[ \t]*)☐(\(2\)非以統包辦理招標。)/m,(m,a,b)=>a+'☑'+b)
+    .replace(/(^[ \t]*)☐(（1）以書面方式投標。)/m,(m,a,b)=>a+'☑'+b)
     .replace(/(^[ \t]*)☐(\(2\)不允許廠商於開標前補正非契約必要之點之文件。)/m,(m,a,b)=>a+'☑'+b)
+    .replace(/(^[ \t]*)☐(\(2\)不允許提出替代方案。)/m,(m,a,b)=>a+'☑'+b)
     .replace(/投標文件有效期：自投標時起至開標後______日止。/,'投標文件有效期：自投標時起至開標後60日止。')
     .replace(/(^[ \t]*)☐(\(1\)1式1份。)/m,(m,a,b)=>a+'☑'+b)
     .replace(/(^[ \t]*)☐(\(2\)中文\(正體字\)，但特殊技術或材料之圖文資料得使用英文。)/m,(m,a,b)=>a+'☑'+b)
+    .replace(/(^[ \t]*)☐(\(1\)不分段開標。所有投標文件置於一標封內，不必按文件屬性分別裝封。)/m,(m,a,b)=>a+'☑'+b)
     .replace(/(^[ \t]*)☐(\(1\)非複數決標。)/m,(m,a,b)=>a+'☑'+b)
     .replace(/(^[ \t]*)☐(\(2\)否。)/m,(m,a,b)=>a+'☑'+b)
     .replace(/(^[ \t]*)☐(\(1\)無例外情形。)/m,(m,a,b)=>a+'☑'+b)
     .replace(/(^[ \t]*)☐(\(1\)新臺幣。)/m,(m,a,b)=>a+'☑'+b)
     .replace(/(^[ \t]*)☐(以書面文件簽約。)/m,(m,a,b)=>a+'☑'+b);
+  const noPerformanceBond=value('performanceBond')==='no'||(value('performanceBond')==='auto'&&rawType==='勞務採購');
+  if(noPerformanceBond&&rawType==='勞務採購')text=text.replace(/(^[ \t]*四十四、\s*無履約保證金之理由為：[\s\S]*?)(?=^[ \t]*四十五、)/m,block=>block.replace(/(^[ \t]*)☐(\(1\)勞務採購。)/m,(m,a,b)=>a+'☑'+b));
   if(value('budgetPublishedReview')==='yes')text=text.replace(/(^[ \t]*)☐(\(1\)高於公告之預算者。)/m,(m,a,b)=>a+'☑'+b);
   const awardWarnings=[];
   if(award==='reference-most-advantageous'&&amount>=announcement)awardWarnings.push('參考最有利標精神僅適用未達公告金額案件');
