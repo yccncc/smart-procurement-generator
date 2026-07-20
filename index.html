@@ -29,7 +29,7 @@
       <button class="step" data-screen="confirm">03　規劃確認</button>
       <button class="step" data-screen="documents">04　文件與檢核</button>
     </nav>
-    <div class="privacy">本原型僅供流程展示<br>AI 建議須由權責人員確認後使用<br>版本：2026.07.20-FULLCONTRACT-16</div>
+    <div class="privacy">本原型僅供流程展示<br>AI 建議須由權責人員確認後使用<br>版本：2026.07.20-V17-RULE-ENGINE</div>
   </aside>
   <main>
     <header class="top"><div><div class="eyebrow">AI 採購文件協作平台</div><h1 id="pageTitle">告訴我們，這次要採購什麼？</h1><div class="sub">以一份案件資料，產生並檢查整套採購文件。</div></div><span class="status">● 資料留在本機瀏覽器</span></header>
@@ -66,7 +66,7 @@
             <div class="field full"><label>是否屬經濟部公告具敏感性或國安（含資安）疑慮之資訊服務採購？</label><select id="sensitiveIT"><option value="no">否</option><option value="yes">是</option><option value="unknown">不確定，請資安或採購人員確認</option></select></div>
             <div class="field full"><label>採購內容是否涉及國家安全，須排除陸資相關廠商？</label><select id="nationalSecurity"><option value="no">否</option><option value="yes">是</option><option value="unknown">不確定，請政風或採購人員確認</option></select></div>
           </div></div>
-        </div><div class="actions"><button class="btn primary" onclick="go('sources')">下一步：加入參考資料</button></div>
+        </div><div class="actions"><button class="btn secondary" onclick="V17Engine.resetCase()">清除並建立新案件</button><button class="btn primary" onclick="go('sources')">下一步：加入參考資料</button></div>
       </div>
     </section>
 
@@ -335,4 +335,5 @@ document.querySelectorAll('[data-doc]').forEach(b=>b.onclick=()=>{document.query
 function downloadPackage(){const html=`<!doctype html><meta charset="utf-8"><title>${value('caseName')}文件包</title><style>body{font-family:"Microsoft JhengHei",sans-serif;max-width:850px;margin:40px auto;line-height:1.8}section{page-break-after:always}table{width:100%;border-collapse:collapse}.unknown{background:#fff0d1}</style>${Object.values(docs).map(x=>'<section>'+x+'</section>').join('')}`;const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));a.download=(value('caseName')||'採購文件包')+'.html';a.click();URL.revokeObjectURL(a.href);toast('文件包已下載')}
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2400)}
 </script>
+<script src="v17-engine.js?v=17"></script>
 </body></html>
