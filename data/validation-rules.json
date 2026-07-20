@@ -1,0 +1,15 @@
+{
+  "schemaVersion":"17.0.0",
+  "rules":[
+    {"ruleId":"VAL-001","severity":"block","condition":"amount.total >= announcement && awardMethod == reference-most-advantageous","message":"公告金額以上案件不得使用『參考最有利標精神』。"},
+    {"ruleId":"VAL-002","severity":"block","condition":"tenderMethod == open && awardMethod == quasi-most-advantageous","message":"公開招標與準用最有利標不相容，請修正招標或決標方式。"},
+    {"ruleId":"VAL-003","severity":"block","condition":"tenderMethod == restricted && legalBasis unknown","message":"限制性招標必須由採購人員確認法定款次。"},
+    {"ruleId":"VAL-004","severity":"block","condition":"basePrice == none && noBasePriceReason unknown","message":"不訂底價必須選擇法定或個案理由。"},
+    {"ruleId":"VAL-005","severity":"block","condition":"bidBond == no && exemptionReason missing","message":"不收押標金必須有第38點免收理由。"},
+    {"ruleId":"VAL-006","severity":"block","condition":"performanceBond == no && exemptionReason missing","message":"不收履約保證金必須有第44點免收理由。"},
+    {"ruleId":"VAL-007","severity":"review","condition":"agreement status unknown","message":"條約協定狀態不得由未勾選推定，須於03階段確認。"},
+    {"ruleId":"VAL-008","severity":"review","condition":"complaint committee unresolved","message":"採購申訴審議機關待採購人員確認。"},
+    {"ruleId":"VAL-009","severity":"review","condition":"nationalSecurity unknown","message":"國安排除條款待確認。"},
+    {"ruleId":"VAL-010","severity":"block","condition":"procurement amount != budget + expansion","message":"採購金額必須等於預算加後續擴充金額。"}
+  ]
+}

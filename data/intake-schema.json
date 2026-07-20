@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "17.0.0",
+  "caseModel": "ProcurementCaseV17",
+  "fields": [
+    {"id":"caseName","path":"case.name","type":"string","required":true},
+    {"id":"agency","path":"case.agency","type":"string","required":false},
+    {"id":"need","path":"case.need","type":"string","required":true},
+    {"id":"type","path":"case.procurementType","type":"enum","values":["工程採購","財物採購","勞務採購"],"required":true},
+    {"id":"budget","path":"amount.budget","type":"number","required":true},
+    {"id":"expansionAmount","path":"amount.expansion","type":"number","default":0},
+    {"id":"tenderMethod","path":"procedure.tenderMethod","type":"enum","values":["open","selective","restricted","unknown"],"required":true},
+    {"id":"tenderBasis","path":"procedure.legalBasis","type":"string","requiredWhen":"procedure.tenderMethod in [selective,restricted]"},
+    {"id":"restrictedProcedure","path":"procedure.restrictedProcedure","type":"string","requiredWhen":"procedure.tenderMethod == restricted"},
+    {"id":"award","path":"procedure.awardMethod","type":"enum","values":["lowest","scored-lowest","most-advantageous","quasi-most-advantageous","reference-most-advantageous","highest","unknown"],"required":true},
+    {"id":"jointTender","path":"procedure.jointTender","type":"string","default":"no"},
+    {"id":"basePrice","path":"procedure.basePrice","type":"enum","values":["private","public","none","unknown"]},
+    {"id":"noBasePriceReason","path":"procedure.noBasePriceReason","type":"string","requiredWhen":"procedure.basePrice == none"},
+    {"id":"bidBond","path":"security.bidBond","type":"enum","values":["auto","yes","no"]},
+    {"id":"performanceBond","path":"security.performanceBond","type":"enum","values":["auto","yes","no"]},
+    {"id":"gpa","path":"agreement.gpa","type":"boolean"},
+    {"id":"anztec","path":"agreement.anztec","type":"boolean"},
+    {"id":"astEP","path":"agreement.astEP","type":"boolean"},
+    {"id":"sensitiveIT","path":"security.sensitiveIT","type":"enum","values":["yes","no","unknown"]},
+    {"id":"nationalSecurity","path":"security.nationalSecurity","type":"enum","values":["yes","no","unknown"]},
+    {"id":"budgetPublishedReview","path":"review.budgetPublished","type":"enum","values":["yes","no","unknown"],"stage":"03"}
+  ]
+}

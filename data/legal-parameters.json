@@ -1,0 +1,24 @@
+{
+  "schemaVersion":"17.0.0",
+  "templateVersion":"114.12.31",
+  "effectiveFrom":"2026-01-01",
+  "verifiedAt":"2026-07-20",
+  "sourceUrl":"https://www.pcc.gov.tw/content/list?eid=9807&lang=1",
+  "currency":"TWD",
+  "thresholds":{
+    "small":150000,
+    "announcement":1500000,
+    "review":{"工程採購":50000000,"財物採購":50000000,"勞務採購":10000000},
+    "large":{"工程採購":200000000,"財物採購":100000000,"勞務採購":20000000}
+  },
+  "complaintCommittees":{
+    "central":"行政院公共工程委員會採購申訴審議委員會",
+    "臺北市":"臺北市政府採購申訴審議委員會",
+    "新北市":"新北市政府採購申訴審議委員會",
+    "桃園市":"桃園市政府採購申訴審議委員會",
+    "臺中市":"臺中市政府採購申訴審議委員會",
+    "臺南市":"臺南市政府採購申訴審議委員會",
+    "高雄市":"高雄市政府採購申訴審議委員會"
+  },
+  "maintenance":{"effectiveFromRequired":true,"sourceUrlRequired":true,"verifiedAtRequired":true,"stopOnExpiredOrUnverified":true}
+}
