@@ -1,0 +1,11 @@
+{
+  "schemaVersion":"17.1.0",
+  "templateVersion":"114.12.31",
+  "effectiveFrom":"2026-07-22",
+  "rules":[
+    {"ruleId":"SC-007-C01","contractArticle":"第七條 履約期限","ruleType":"conditional","inputs":["contract.performancePeriod.startEvent","contract.performancePeriod.durationValue","contract.performancePeriod.durationUnit"],"conditions":{"mode":"relative"},"actions":{"select":"relativePeriod","fillStartEvent":"$contract.performancePeriod.startEvent","fillDuration":"$contract.performancePeriod.durationValue","fillUnit":"$contract.performancePeriod.durationUnit"},"reviewRequired":false,"legalSource":"行政院公共工程委員會勞務採購契約範本"},
+    {"ruleId":"SC-007-C02","contractArticle":"第七條 履約期限","ruleType":"conditional","inputs":["contract.performancePeriod.startDate","contract.performancePeriod.endDate"],"conditions":{"mode":"fixed"},"actions":{"select":"fixedPeriod","fillStartDate":"$contract.performancePeriod.startDate","fillEndDate":"$contract.performancePeriod.endDate"},"reviewRequired":false,"legalSource":"行政院公共工程委員會勞務採購契約範本"},
+    {"ruleId":"SC-007-C03","contractArticle":"第七條 履約期限","ruleType":"conditional","inputs":["contract.performancePeriod.milestones"],"conditions":{"mode":"milestone"},"actions":{"select":"other","insertMilestones":true},"reviewRequired":true,"legalSource":"行政院公共工程委員會勞務採購契約範本"},
+    {"ruleId":"SC-007-R01","contractArticle":"第七條 履約期限","ruleType":"manual-review","inputs":["contract.performancePeriod.mode"],"conditions":{"mode":"unknown"},"actions":{"blockGeneration":true},"reviewRequired":true,"legalSource":"行政院公共工程委員會勞務採購契約範本"}
+  ]
+}

@@ -4,6 +4,13 @@
   "fields": [
     {"id":"caseName","path":"case.name","type":"string","required":true},
     {"id":"agency","path":"case.agency","type":"string","required":false},
+    {"id":"periodMode","path":"contract.performancePeriod.mode","type":"enum","values":["relative","fixed","milestone","unknown"],"required":true},
+    {"id":"periodStartEvent","path":"contract.performancePeriod.startEvent","type":"enum","values":["awardNextDay","contractNextDay","agencyNotice","other"],"requiredWhen":"contract.performancePeriod.mode == relative"},
+    {"id":"periodDuration","path":"contract.performancePeriod.durationValue","type":"number","requiredWhen":"contract.performancePeriod.mode == relative"},
+    {"id":"periodUnit","path":"contract.performancePeriod.durationUnit","type":"enum","values":["calendarDay","workingDay","month","year"],"requiredWhen":"contract.performancePeriod.mode == relative"},
+    {"id":"periodStartDate","path":"contract.performancePeriod.startDate","type":"date","requiredWhen":"contract.performancePeriod.mode == fixed"},
+    {"id":"periodEndDate","path":"contract.performancePeriod.endDate","type":"date","requiredWhen":"contract.performancePeriod.mode == fixed"},
+    {"id":"periodMilestones","path":"contract.performancePeriod.milestones","type":"array","requiredWhen":"contract.performancePeriod.mode == milestone"},
     {"id":"need","path":"case.need","type":"string","required":true},
     {"id":"type","path":"case.procurementType","type":"enum","values":["工程採購","財物採購","勞務採購"],"required":true},
     {"id":"budget","path":"amount.budget","type":"number","required":true},

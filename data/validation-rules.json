@@ -10,6 +10,13 @@
     {"ruleId":"VAL-007","severity":"review","condition":"agreement status unknown","message":"條約協定狀態不得由未勾選推定，須於03階段確認。"},
     {"ruleId":"VAL-008","severity":"review","condition":"complaint committee unresolved","message":"採購申訴審議機關待採購人員確認。"},
     {"ruleId":"VAL-009","severity":"review","condition":"nationalSecurity unknown","message":"國安排除條款待確認。"},
-    {"ruleId":"VAL-010","severity":"block","condition":"procurement amount != budget + expansion","message":"採購金額必須等於預算加後續擴充金額。"}
+    {"ruleId":"VAL-010","severity":"block","condition":"procurement amount != budget + expansion","message":"採購金額必須等於預算加後續擴充金額。"},
+    {"ruleId":"VAL-PERIOD-001","severity":"block","condition":"performancePeriod.mode == relative && durationValue <= 0","message":"相對履約期間必須填寫大於0的期限數值。"},
+    {"ruleId":"VAL-PERIOD-002","severity":"block","condition":"performancePeriod.mode == relative && startEvent missing","message":"相對履約期間必須選擇起算事件。"},
+    {"ruleId":"VAL-PERIOD-003","severity":"block","condition":"performancePeriod.mode == fixed && startDate missing","message":"固定日期履約必須填寫開始日期。"},
+    {"ruleId":"VAL-PERIOD-004","severity":"block","condition":"performancePeriod.mode == fixed && endDate missing","message":"固定日期履約必須填寫截止日期。"},
+    {"ruleId":"VAL-PERIOD-005","severity":"block","condition":"performancePeriod.mode == fixed && endDate < startDate","message":"履約截止日期不得早於開始日期。"},
+    {"ruleId":"VAL-PERIOD-006","severity":"block","condition":"performancePeriod.mode == milestone && milestones empty","message":"分階段履約必須填寫各階段期限與成果。"},
+    {"ruleId":"VAL-PERIOD-007","severity":"block","condition":"performancePeriod.mode == unknown","message":"履約期限尚待確認，不能產生契約草案。"}
   ]
 }
